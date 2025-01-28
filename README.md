@@ -27,21 +27,21 @@ The project aims to revolutionize university credit management by integrating bl
 
 **Preconditions:**
 
-- The students is enrolled in a university.
-- The home university provides a Metamask wallet with some ETH to the student. The student needs it to pay the transaction fees required to write her data in the blockchain.
+- The students apply for the first time in a university.
 - Both universities are registered and authorized entities in the EduWallet system.
 
 **Scenario**:
 
-1. The student creates an account on EduWallet, entering her personal information (e.g., name, surname, date of birth, and ID) and linking her Metamask wallet.
-2. The students manually gives to her university the permission to access and modify her EduWallet data.
-3. The home university approves the student's enrolment request and updates her EduWallet with her academic data, including her new study plan.
-4. During the student's career, her home university records grades and credits on EduWallet.
-5. The student decides to participate in an exchange program and the host university permission to access (and modify) her EduWallet data.
-6. The host university retrieves the student's academic records, verifies them, and approve her exchange request. The host university updates her new study plan.
-7. During the exchange program, the host university records the student's academic performance, including grades and credits, on EduWallet.
-8. At the end of the program, the student removes the host university's access to her EduWallet data.
-9. The home university retrieves the student’s academic results from the host university via EduWallet.
+1. The home university approves the student's enrolment request and create an EduWallet for her, inserting the student's validated data. The first university has by default the permission to write and read the student's wallet.
+2. During the student's career, her home university records grades and credits on EduWallet.
+3. The student decides to participate in an exchange program. The host university requests the permission to access her EduWallet data.
+4. The student grants the permissions to the host university.
+5. The host university retrieves the student's academic records and approve her exchange request.
+6. The host university asks the student for the permission to modify her data.
+7. The student grants the writing access.
+8. During the exchange program, the host university records the student's academic performance, including grades and credits, on EduWallet.
+9. At the end of the program, the student removes the host university's access to her EduWallet data.
+10. The home university retrieves the student’s academic results from the host university via EduWallet.
 
 **Postconditions:**
 
