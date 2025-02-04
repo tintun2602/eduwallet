@@ -9,6 +9,7 @@
     - [Scenario 1](#scenario-1)
     - [Scenario 2](#scenario-2)
   - [GUI prototype](#gui-prototype)
+>>>>>>> 5532da6518c84f249a471cb2defa0120bbfd7c6a
 
 ## Purpose
 
