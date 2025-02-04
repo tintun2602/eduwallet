@@ -8,6 +8,7 @@
   - [Scenarios](#scenarios)
     - [Scenario 1](#scenario-1)
     - [Scenario 2](#scenario-2)
+  - [GUI prototipes](#gui-prototipes)
 
 ## Purpose
 
@@ -74,3 +75,7 @@ The project aims to revolutionize university credit management by integrating bl
 - The employer has verified and certified access to the candidate's academic records through EduWallet.
 - The candidate academic data are certified, secure and immutable without authorization.
 - The permission granted to the employer expires.
+
+## GUI prototipes
+
+[Figma GUI prototype](https://www.figma.com/design/aZrmR2thWfRGKQWDQbZE9C/EduWallet?node-id=125-95&t=gQwA5a4uDzRy8jBl-1)
