@@ -8,11 +8,11 @@
   - [Scenarios](#scenarios)
     - [Scenario 1](#scenario-1)
     - [Scenario 2](#scenario-2)
-  - [GUI prototipes](#gui-prototipes)
+  - [GUI prototype](#gui-prototype)
 
 ## Purpose
 
-The project aims to revolutionize university credit management by integrating blockchain with existing educational systems using Blackboard and Inspera APIs. EduWallet ensures secure, efficient record-keeping and easy credit transferability across institutions.
+The project aims to revolutionize university credit management by storing students' academic information on the blockchain. Through EduWallet APIs, universities can easily synchronize grades and credits, simplifying the transfer of academic records between institutions. EduWallet ensures secure, efficient record-keeping and easy credit transferability across institutions.
 
 ## Scenarios
 
@@ -76,6 +76,6 @@ The project aims to revolutionize university credit management by integrating bl
 - The candidate academic data are certified, secure and immutable without authorization.
 - The permission granted to the employer expires.
 
-## GUI prototipes
+## GUI prototype
 
 [Figma GUI prototype](https://www.figma.com/design/aZrmR2thWfRGKQWDQbZE9C/EduWallet?node-id=125-95&t=gQwA5a4uDzRy8jBl-1)
