@@ -1,0 +1,28 @@
+{
+  "name": "edu-wallet",
+  "version": "1.0.0",
+  "description": "The project aims to revolutionize university credit management by storing students' academic information on the blockchain. Through EduWallet APIs, universities can easily synchronize grades and credits, simplifying the transfer of academic records between institutions. EduWallet ensures secure, efficient record-keeping and easy credit transferability across institutions.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NTNU-IDI/eduwallet-eduwalletdiego.git"
+  },
+  "keywords": [],
+  "author": "Diego Da Giau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NTNU-IDI/eduwallet-eduwalletdiego/issues"
+  },
+  "homepage": "https://github.com/NTNU-IDI/eduwallet-eduwalletdiego#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "ethers": "^6.13.5",
+    "hardhat": "^2.22.18"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0"
+  }
+}
