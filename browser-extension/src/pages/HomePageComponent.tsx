@@ -16,6 +16,16 @@ function Homepage(props: HomepageProps) {
         <>
             <Container>
                 <Row className="mb-3">
+                    <Col className="">
+                        <strong className="text-24">Wallet</strong>
+                    </Col>
+                    <Col className="text-end">
+                        <Image src="images/icons/user.svg" alt="User icon" />
+                    </Col>
+                </Row>
+            </Container>
+            <Container>
+                <Row className="mb-3">
                     <Col className="text-20">
                         Hello <strong>{user.getName()}</strong>
                     </Col>

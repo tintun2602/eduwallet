@@ -6,13 +6,11 @@ import { useEffect, useState } from 'react';
 import LoginPage from './pages/LoginPageComponent';
 import Homepage from './pages/HomePageComponent';
 import { User } from './models/user';
-import Layout from './components/LayoutComponent';
 import UserPage from './pages/UserPageComponent';
 
 
 import { ntnu, polito, student, results } from './db';
 import University from './models/university';
-import { Outlet } from 'react-router-dom';
 
 
 function App() {
@@ -21,7 +19,7 @@ function App() {
   const [universities, setUniversities] = useState<University[]>([]);
 
   useEffect(() => {
-    setIsLoggedIn(false);
+    setIsLoggedIn(true);
   }, []);
 
   useEffect(() => {
@@ -35,19 +33,15 @@ function App() {
     setUniversities(unis.sort((a, b) => a.getName().localeCompare(b.getName())));
   }, []);
 
-  const ProtectedRoute = () => {
-    return isLoggedIn && user ? <Layout><Outlet /></Layout> : <Layout><Outlet /></Layout>;
-  };
-
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/" element={<ProtectedRoute />}>
-        <Route index element={user && <Homepage user={user} universities={universities} />} />
-      </Route>
-      <Route path='/user' element={<ProtectedRoute />}>
-        <Route index element={user && <UserPage user={user} />} />
-      </Route>
+      <Route path="/wallet" element={
+        user && isLoggedIn ? <Homepage universities={universities} user={user} /> : <LoginPage />
+      } />
+      <Route path='/user' element={
+        user && isLoggedIn ? <UserPage user={user} /> : <LoginPage />
+      } />
     </Routes>
   );
 }

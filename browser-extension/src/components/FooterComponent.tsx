@@ -5,10 +5,11 @@ import { Col, Container, Image, Row } from "react-bootstrap";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
 export default function Footer() {
-    const [menuOption, setMenuOption] = useState<number>(1);
+    const [menuOption, setMenuOption] = useState<string>("wallet");
     const navigate: NavigateFunction = useNavigate();
-    const changeMenu = (option: number) => {
+    const changeMenu = (option: string) => {
         setMenuOption(option);
+        navigate("/" + option);
     }
 
     return (
@@ -16,7 +17,7 @@ export default function Footer() {
             <footer className="container-fluid py-2">
                 <Row>
                     <Col>
-                        <Container className={"text-center" + " " + (menuOption == 1? "selected-option" : "not-selected-option")} onClick={() => {changeMenu(1); navigate("/")}}>
+                        <Container className={"text-center" + " " + (menuOption === "wallet"? "selected-option" : "not-selected-option")} onClick={() => changeMenu("wallet")}>
                             <Row>
                                 <Col>
                                     <Image src="images/icons/wallet.svg" />
@@ -30,7 +31,7 @@ export default function Footer() {
                         </Container>
                     </Col>
                     <Col>
-                        <Container className={"text-center" + " " + (menuOption == 2? "selected-option" : "not-selected-option")} onClick={() => {changeMenu(2); navigate("/permissions")}}>
+                        <Container className={"text-center" + " " + (menuOption === "permissions"? "selected-option" : "not-selected-option")} onClick={() => changeMenu("permissions")}>
                             <Row>
                                 <Col>
                                     <Image src="images/icons/permissions.svg" />

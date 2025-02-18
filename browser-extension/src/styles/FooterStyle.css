@@ -6,3 +6,8 @@
 .not-selected-option img {
     opacity: 0.6;
 }
+
+.selected-option:hover,
+.not-selected-option:hover {
+    cursor: pointer;
+}
