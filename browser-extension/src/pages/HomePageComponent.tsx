@@ -5,22 +5,24 @@ import { Result, User } from "../models/user";
 import { Dispatch, SetStateAction, useState } from "react";
 import University from "../models/university";
 import Footer from "../components/FooterComponent";
+import { useNavigate } from "react-router-dom";
 
 function Homepage(props: HomepageProps) {
     const user = props.user;
     const universities = props.universities;
     const creditNumber: number = user.getResults().filter(r => r.grade != "").reduce((a, v) => a + v.ects, 0);
     const [activeUniversity, setActiveUniversity] = useState<number>(universities[0].getId());
+    const navigate = useNavigate();
 
     return (
         <>
             <Container>
                 <Row className="mb-3">
-                    <Col className="">
+                    <Col>
                         <strong className="text-24">Wallet</strong>
                     </Col>
                     <Col className="text-end">
-                        <Image src="images/icons/user.svg" alt="User icon" />
+                        <Image src="images/icons/user.svg" alt="User icon" className="cursor-pointer" onClick={() => navigate("/user")} />
                     </Col>
                 </Row>
             </Container>
@@ -120,10 +122,14 @@ interface DegreeCourseResultsProps {
 
 function DegreeCourseResult(props: DegreeCourseResultProps) {
     const result: Result = props.result;
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate("/wallet/" + result.code, { state: { result } });
+    }
 
     return (
         <>
-            <Row className="ps-2">
+            <Row className="ps-2 cursor-pointer" onClick={handleClick}>
                 <Col className="p-0">
                     <Container className="text-14">
                         <Row>

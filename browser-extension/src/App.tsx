@@ -7,10 +7,12 @@ import LoginPage from './pages/LoginPageComponent';
 import Homepage from './pages/HomePageComponent';
 import { User } from './models/user';
 import UserPage from './pages/UserPageComponent';
+import University from './models/university';
+import CoursePage from './pages/CoursePageComponent';
 
 
 import { ntnu, polito, student, results } from './db';
-import University from './models/university';
+
 
 
 function App() {
@@ -41,6 +43,9 @@ function App() {
       } />
       <Route path='/user' element={
         user && isLoggedIn ? <UserPage user={user} /> : <LoginPage />
+      } />
+      <Route path='/wallet/:code' element={
+        user && isLoggedIn ? <CoursePage /> : <LoginPage />
       } />
     </Routes>
   );
