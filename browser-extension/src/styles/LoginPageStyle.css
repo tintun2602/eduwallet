@@ -1,0 +1,35 @@
+#main-logo {
+  font-size: 48px;
+  font-weight: 900;
+}
+
+.no-arrows::-webkit-outer-spin-button,
+.no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.floating-label {
+  position: relative;
+  width: 100%;
+  margin-top: 6vh;
+  margin-bottom: 6h;
+}
+
+.floating-label input {
+  width: 100%;
+  border-radius: 12px;
+  border: none;
+  background-color: #6652fe6f;
+  color: #ffffff;
+  height: 11vh;
+  padding-left: 4vw;
+}
+
+.floating-label label {
+  position: absolute;
+  left: 4vw;
+  top: 0.5vh;
+  color: #a199e4;
+  font-size: 12px;
+}
