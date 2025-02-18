@@ -17,7 +17,7 @@ export default function CoursePage() {
         <>
             <Container>
                 <Row className="mb-3">
-                    <Col>
+                    <Col className="my-auto">
                         <Image src="images/icons/arrow.svg" alt="Arrow icon" className="cursor-pointer" onClick={goBack} />
                     </Col>
                     <Col className="text-end">

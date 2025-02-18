@@ -71,6 +71,19 @@ export class User {
             }
         ));
     }
+
+    toObject() {
+        return (
+            {
+                id: this._id,
+                name: this._name,
+                surname: this._surname,
+                birthDate: this._birthDate,
+                birthPlace: this._birthPlace,
+                country: this._country,
+            }
+        );
+    }
 }
 
 export interface Result {
