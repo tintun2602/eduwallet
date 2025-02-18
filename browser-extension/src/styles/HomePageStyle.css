@@ -1,0 +1,76 @@
+.degree-course {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.course-name {
+  line-height: 16px;
+}
+
+.course-code {
+  color: var(--secondary-color);
+}
+
+.course-info {
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.course-grade {
+  color: var(--secondary-color);
+}
+
+.image-container {
+  position: relative;
+  text-align: left;
+  color: black;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+}
+
+.overlay-text {
+  position: absolute;
+  top: 8%;
+  left: 10%
+}
+
+.underline {
+  text-decoration: underline;
+  text-decoration-color: var(--secondary-color);
+  text-decoration-thickness: 3px;
+}
+
+.menu-option {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.menu-option:hover {
+  cursor: pointer;
+}
+
+.main-content {
+  height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.main-content::-webkit-scrollbar {
+  width: 2px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
