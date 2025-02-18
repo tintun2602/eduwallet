@@ -12,17 +12,16 @@ import UserPage from './pages/UserPageComponent';
 
 import { ntnu, polito, student, results } from './db';
 import University from './models/university';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<User>();
   const [universities, setUniversities] = useState<University[]>([]);
-  //const [menuOption, setMenuOption] = useState<number>(1);
 
   useEffect(() => {
-    setIsLoggedIn(true);
+    setIsLoggedIn(false);
   }, []);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ function App() {
   }, []);
 
   const ProtectedRoute = () => {
-    return isLoggedIn && user ? <Layout><Outlet /></Layout> : <Navigate to="/login" />;
+    return isLoggedIn && user ? <Layout><Outlet /></Layout> : <Layout><Outlet /></Layout>;
   };
 
   return (

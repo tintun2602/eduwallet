@@ -4,6 +4,7 @@ import { Col, Container, Image, Row } from "react-bootstrap";
 import { Result, User } from "../models/user";
 import { Dispatch, SetStateAction, useState } from "react";
 import University from "../models/university";
+import Footer from "../components/FooterComponent";
 
 function Homepage(props: HomepageProps) {
     const user = props.user;
@@ -37,6 +38,7 @@ function Homepage(props: HomepageProps) {
                     <UniversityResults results={user.getResultsByUniversityGroupedByCourseDegree(activeUniversity)} />
                 </Container>
             </Container>
+            <Footer />
         </>
     );
 }

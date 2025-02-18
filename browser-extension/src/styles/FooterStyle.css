@@ -1,0 +1,8 @@
+.selected-option {
+    font-weight: 700;
+    opacity: 1;
+}
+
+.not-selected-option img {
+    opacity: 0.6;
+}
