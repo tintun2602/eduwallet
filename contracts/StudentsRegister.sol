@@ -8,6 +8,7 @@ import "./Student.sol";
 
 error AlreadyExistingStudent();
 error StudentNotAccessible();
+error StudentNotPresent();
 
 /**
  * @title StudentRegister
@@ -33,6 +34,10 @@ contract StudentsRegister is AccessControl {
 
     function getStudentWallet(address student) external view returns (address) {
         require(hasRole(UNIVERSITY_ROLE, _msgSender()) || _msgSender() == student, StudentNotAccessible());
-        return studentWallets[student];
+        address studentWallet = studentWallets[student];
+        if (studentWallet != address(0)) {
+            return studentWallet;
+        }
+        revert StudentNotPresent();
     }
 }
