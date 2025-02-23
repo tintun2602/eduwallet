@@ -37,7 +37,7 @@ export class StudentModel {
      */
     static createEmpty(): StudentModel {
         const hdWallet = Wallet.createRandom();
-        return new StudentModel(-1, new Wallet(hdWallet.address), '');
+        return new StudentModel(-1, new Wallet(hdWallet.privateKey), '');
     }
 
     /**
