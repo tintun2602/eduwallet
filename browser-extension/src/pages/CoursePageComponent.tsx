@@ -1,11 +1,17 @@
-import "../styles/CoursePageStyle.css"
+import "../styles/CoursePageStyle.css";
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { Result } from "../models/user";
+import { Result } from "../models/student";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import List from "../components/ListComponent";
+import { JSX } from "react";
 
-export default function CoursePage() {
+/**
+ * CoursePage component renders the detailed page for a specific course.
+ * @author Diego Da Giau
+ * @returns {JSX.Element} The rendered course page component.
+ */
+export default function CoursePage(): JSX.Element {
     const location = useLocation();
     const result: Result = location.state.result;
     const navigate = useNavigate();
@@ -15,22 +21,27 @@ export default function CoursePage() {
 
     return (
         <>
+            {/* Header */}
             <Container>
                 <Row className="mb-3">
                     <Col className="my-auto">
                         <Image src="images/icons/arrow.svg" alt="Arrow icon" className="cursor-pointer" onClick={goBack} />
                     </Col>
                     <Col className="text-end">
-                        <Image src="images/icons/user.svg" alt="User icon" className="cursor-pointer" onClick={() => navigate("/user")} />
+                        <Image src="images/icons/student.svg" alt="StudentModel icon" className="cursor-pointer" onClick={() => navigate("/student")} />
                     </Col>
                 </Row>
             </Container>
+
+            {/* Course title */}
             <Container>
                 <Row id="course-title" className="mb-3">
                     <Col>
                         {result.name}
                     </Col>
                 </Row>
+
+                {/* Course details */}
                 <Row>
                     <List object={result} />
                 </Row>

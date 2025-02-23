@@ -1,10 +1,23 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../providers/AuthenticationProvider";
+import { JSX } from "react";
 
-export default function PrivateRoute() {
-    const user = useAuth();
-    if (user.user.getId() === -1) {
+/**
+ * PrivateRoute component restricts access to routes based on student authentication.
+ * If the student is not authenticated, it redirects to the login page.
+ * Otherwise, it renders the child routes.
+ * @author Diego Da Giau
+ * @returns {JSX.Element} The rendered private route component.
+ */
+export default function PrivateRoute(): JSX.Element {
+    const student = useAuth();
+
+    // Check if the student is authenticated
+    if (student.student.id === -1) {
+        // If not authenticated, redirect to the login page
         return (<Navigate to="/login" />);
     }
+
+    // If authenticated, render the child routes
     return (<Outlet />);
 }

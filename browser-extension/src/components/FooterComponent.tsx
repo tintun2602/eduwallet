@@ -1,10 +1,14 @@
 import "../styles/FooterStyle.css";
-
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
-export default function Footer() {
+/**
+ * Footer component renders the footer navigation menu.
+ * @author Diego Da Giau
+ * @returns {JSX.Element} The rendered footer component.
+ */
+export default function Footer(): JSX.Element {
     const [menuOption, setMenuOption] = useState<string>("wallet");
     const navigate: NavigateFunction = useNavigate();
     const changeMenu = (option: string) => {
@@ -16,8 +20,9 @@ export default function Footer() {
         <>
             <footer className="container-fluid py-2">
                 <Row>
+                    {/* Wallet menu option */}
                     <Col>
-                        <Container className={"text-center" + " " + (menuOption === "wallet"? "selected-option" : "not-selected-option")} onClick={() => changeMenu("wallet")}>
+                        <Container className={"text-center" + " " + (menuOption === "wallet" ? "selected-option" : "not-selected-option")} onClick={() => changeMenu("wallet")}>
                             <Row>
                                 <Col>
                                     <Image src="images/icons/wallet.svg" />
@@ -30,8 +35,9 @@ export default function Footer() {
                             </Row>
                         </Container>
                     </Col>
+                    {/* Permissions menu option */}
                     <Col>
-                        <Container className={"text-center" + " " + (menuOption === "permissions"? "selected-option" : "not-selected-option")} onClick={() => changeMenu("permissions")}>
+                        <Container className={"text-center" + " " + (menuOption === "permissions" ? "selected-option" : "not-selected-option")} onClick={() => changeMenu("permissions")}>
                             <Row>
                                 <Col>
                                     <Image src="images/icons/permissions.svg" />

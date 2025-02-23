@@ -125,6 +125,28 @@ async function main() {
     const contractStudentWallet = await studentsRegister.connect(university).getStudentWallet(studentWalletInfo.wallet.address);
     console.log(`\nStudent smart wallet address from contract: ${contractStudentWallet}`);
 
+    console.log("\nEnrolling student using password-derived wallet as identity...");
+    const Student = await hre.ethers.getContractFactory("Student");
+    studentContract = Student.attach(contractStudentWallet);
+
+    await studentContract.connect(university).enroll(
+        "14BHDOA",
+        "Computer Science",
+        "Bechelor in COMPUTER SCIENCE",
+        8,
+        0
+    );
+    await studentContract.connect(university).enroll(
+        "14BHDYT",
+        "Prova",
+        "Master in COMPUTER SCIENCE",
+        7,
+        5
+    );
+
+    console.log("\nEvaluating student using password-derived wallet as identity...");
+    await studentContract.connect(university).evaluate("14BHDOA", "30L/30", new Date().getTime());
+
     // Simulate student authentication by recovering wallet from password
     console.log("\nSimulating student authentication with password...");
     const recoveredWallet = new Wallet(derivePrivateKey(studentWalletInfo.password, 'unique-university-salt')).connect(provider);

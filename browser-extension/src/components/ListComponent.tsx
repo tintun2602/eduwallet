@@ -1,19 +1,20 @@
-import "../styles/ListComponentStyle.css"
-
+import { JSX } from "react";
+import "../styles/ListComponentStyle.css";
 import { Col, Container, Row } from "react-bootstrap";
+import { formatCamelCaseString } from "../utils/utils";
 
-function formatCamelCaseString(str: string) {
-    const spacedString = str.replace(/([A-Z])/g, ' $1').toLowerCase();
-    const formattedString = spacedString.charAt(0).toUpperCase() + spacedString.slice(1);
-    
-    return formattedString;
-}
-
-export default function List(props: ListProps) {
+/**
+ * List component renders a list of key-value pairs from an object.
+ * @author Diego Da Giau
+ * @param {ListProps} props - The properties passed to the component.
+ * @returns {JSX.Element} The rendered list component.
+ */
+export default function List(props: ListProps): JSX.Element {
     const obj = props.object;
     const list = [];
     const keys = Object.keys(obj);
 
+    // Iterate over the keys of the object and create list items
     for (let i = 0; i < keys.length; ++i) {
         list.push(
             <Container key={i} className="list">
@@ -27,7 +28,7 @@ export default function List(props: ListProps) {
                         {obj[keys[i]]}
                     </Col>
                 </Row>
-                {i === (keys.length-1)? <></> : <hr className="my-2" />}
+                {i === (keys.length - 1) ? <></> : <hr className="my-2" />}
             </Container>
         );
     }
@@ -39,6 +40,10 @@ export default function List(props: ListProps) {
     );
 }
 
+/**
+ * Properties for the List component.
+ * @author Diego Da Giau
+ */
 interface ListProps {
-    object: { [key: string]: any },
+    object: { [key: string]: any };
 }

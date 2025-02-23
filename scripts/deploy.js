@@ -24,8 +24,6 @@ function write_env_variable(contract_address) {
         // Append new value
         fs.appendFileSync(FILE, `\n${envVar}`);
     }
-    
-    console.log('Environment variable written to .env');
 }
 
 async function main() {

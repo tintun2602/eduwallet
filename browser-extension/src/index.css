@@ -28,7 +28,6 @@ a:hover {
 body {
   width: 400px;
   height: 550px;
-  /* background-color: var(--background-color) !important; */
 }
 
 button {

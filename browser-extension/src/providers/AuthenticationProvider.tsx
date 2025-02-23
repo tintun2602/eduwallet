@@ -1,18 +1,24 @@
-import { createContext, useContext, useState } from "react";
-import { Credentials, User } from "../models/user";
+import { createContext, JSX, useContext, useState } from "react";
+import { Credentials, StudentModel } from "../models/student";
 import { logIn } from "../API"
 import { useNavigate } from "react-router-dom";
 
 interface AuthenticationProviderProps {
-    user: User,
-    login(credentials: Credentials): void,
-    updateUser(user: User): void,
+    student: StudentModel,
+    login(credentials: Credentials): void
 }
 
-const AuthContext = createContext<AuthenticationProviderProps>({ user: User.emptyUser(), login: () => { }, updateUser: () => { } });
+const AuthContext = createContext<AuthenticationProviderProps>({ student: StudentModel.createEmpty(), login: () => { } });
 
-export default function AuthenticationProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User>(User.emptyUser());
+/**
+ * AuthenticationProvider component that provides authentication context to its children.
+ * @author Diego Da Giau
+ * @param {Object} props - The props object.
+ * @param {React.ReactNode} props.children - The child components that will have access to the authentication context.
+ * @returns {JSX.Element} The AuthContext provider with the authentication state and functions.
+ */
+export default function AuthenticationProvider({ children }: { children: React.ReactNode }): JSX.Element {
+    const [student, setUser] = useState<StudentModel>(StudentModel.createEmpty());
     const navigate = useNavigate();
     const login = async (credentials: Credentials) => {
         try {
@@ -23,16 +29,8 @@ export default function AuthenticationProvider({ children }: { children: React.R
         }
     };
 
-    const updateUser = async (user: User) => {
-        try {
-            setUser(user);
-        } catch (err) {
-
-        }
-    };
-
     return (
-        <AuthContext.Provider value={{ user, login, updateUser }}>
+        <AuthContext.Provider value={{ student, login }}>
             {children}
         </AuthContext.Provider>
     )

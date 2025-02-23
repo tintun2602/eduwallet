@@ -1,12 +1,18 @@
 import "../styles/UserPageStyle.css"
 
-import { User } from "../models/user"
 import { Col, Container, Image, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import List from "../components/ListComponent";
+import { useAuth } from "../providers/AuthenticationProvider";
+import { JSX } from "react";
 
-export default function UserPage(props: UserPageProps) {
-    const user = props.user;
+/**
+ * UserPage component displays the student's profile information. It renders the student's profile information in a structured layout.
+ * @author Diego Da Giau
+ * @returns {JSX.Element} The rendered UserPage component.
+ */
+export default function StudentPage(): JSX.Element {
+    const student = useAuth().student;
     const navigate = useNavigate();
     const goBack = () => {
         navigate(-1);
@@ -14,6 +20,7 @@ export default function UserPage(props: UserPageProps) {
 
     return (
         <>
+            {/* Header */}
             <Container>
                 <Row className="mb-3">
                     <Col xs={1} className="my-auto">
@@ -24,15 +31,12 @@ export default function UserPage(props: UserPageProps) {
                     </Col>
                 </Row>
             </Container>
+            {/* Student's information */}
             <Container>
                 <Row>
-                    <List object={user.toObject()} />
+                    <List object={student.toObject()} />
                 </Row>
             </Container>
         </>
     );
-}
-
-interface UserPageProps {
-    user: User,
 }
