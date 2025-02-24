@@ -16,6 +16,9 @@ error WrongRole();
  * @author Diego Da Giau
  * @notice Manages a student's academic records and university permissions
  * @dev Implements role-based access control for universities to manage student records
+ * 
+ * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors.
+ * ? Is it better to save data as immutable and then return the struct when getters for student's info are called?
  */
 contract Student is AccessControlEnumerable {
     using Strings for string;
@@ -54,24 +57,51 @@ contract Student is AccessControlEnumerable {
         uint date;
     }
 
-    // Student's personal information
-    string private name;
-    string private surname;
-    uint private birthDate;
-    string private birthPlace;
-    string private country;
-
-    // Array of academic results
-    Result[] private results;
+    /**
+     * @dev Structure containing student's basic personal information
+     * @param name Student's first name
+     * @param surname Student's last name
+     * @param birthDate Unix timestamp of student's birth date
+     * @param birthPlace Student's place of birth
+     * @param country Student's country of birth
+     */
+    struct StudentBasicInfo {
+        string name;
+        string surname;
+        uint birthDate;
+        string birthPlace;
+        string country;
+    }
 
     /**
-     * @notice Initializes a new Student contract
-     * @dev Sets up initial student data and grants roles
-     * @param _university Address of the initial university with write access
-     * @param _student Address of the student (admin role)
+     * @dev Structure containing complete student information
+     * @param name Student's first name
+     * @param surname Student's last name
+     * @param birthDate Unix timestamp of student's birth date
+     * @param birthPlace Student's place of birth
+     * @param country Student's country of birth
+     * @param results Array of all academic results
+     */
+    struct StudentInfo {
+        string name;
+        string surname;
+        uint birthDate;
+        string birthPlace;
+        string country;
+        Result[] results;
+    }
+
+    // Student's information
+    StudentInfo private studentInfo;
+
+    /**
+     * @notice Creates a new Student contract with initial data
+     * @dev Initializes student information and grants initial roles
+     * @param _university Initial university address to receive WRITER_ROLE
+     * @param _student Student's address to receive DEFAULT_ADMIN_ROLE
      * @param _name Student's first name
      * @param _surname Student's last name
-     * @param _birthDate Student's birth date as Unix timestamp
+     * @param _birthDate Unix timestamp of student's birth date
      * @param _birthPlace Student's place of birth
      * @param _country Student's country of birth
      */
@@ -84,57 +114,69 @@ contract Student is AccessControlEnumerable {
         string memory _birthPlace,
         string memory _country
     ) {
-        name = _name;
-        surname = _surname;
-        birthDate = _birthDate;
-        birthPlace = _birthPlace;
-        country = _country;
+        studentInfo.name = _name;
+        studentInfo.surname = _surname;
+        studentInfo.birthDate = _birthDate;
+        studentInfo.birthPlace = _birthPlace;
+        studentInfo.country = _country;
+
         _grantRole(DEFAULT_ADMIN_ROLE, _student);
         _grantRole(WRITER_ROLE, _university);
     }
 
     /**
-     * @notice Retrieves student's personal information
-     * @return name Student's first name
-     * @return surname Student's last name
-     * @return birthDate Student's birth date
-     * @return birthPlace Student's place of birth
-     * @return country Student's country of birth
+     * @notice Gets complete student information including academic records
+     * @dev Only accessible by addresses with DEFAULT_ADMIN_ROLE
+     * @return Complete student information structure
      */
-    function getStudent()
+    function getStudentInfo()
         external
         view
-        returns (
-            string memory,
-            string memory,
-            uint,
-            string memory,
-            string memory
-        )
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (StudentInfo memory)
     {
-        return (name, surname, birthDate, birthPlace, country);
+        return studentInfo;
     }
 
     /**
-     * @notice Retrieves all academic results
-     * @dev Caller must have READER_ROLE, WRITER_ROLE, or be the student
-     * @return Array of Result structs containing academic records
+     * @notice Gets student's basic information without academic records
+     * @dev Accessible by anyone (public information)
+     * @return Basic student information structure
+     */
+    function getStudentBasicInfo()
+        external
+        view
+        returns (StudentBasicInfo memory)
+    {
+        return
+            StudentBasicInfo({
+                name: studentInfo.name,
+                surname: studentInfo.surname,
+                birthDate: studentInfo.birthDate,
+                birthPlace: studentInfo.birthPlace,
+                country: studentInfo.country
+            });
+    }
+
+    /**
+     * @notice Gets all academic results
+     * @dev Only accessible by addresses with READER_ROLE or WRITER_ROLE
+     * @return Array of academic results
      */
     function getResults() external view returns (Result[] memory) {
         require(
-            hasRole(DEFAULT_ADMIN_ROLE, _msgSender()) ||
-                hasRole(READER_ROLE, _msgSender()) ||
+            hasRole(READER_ROLE, _msgSender()) ||
                 hasRole(WRITER_ROLE, _msgSender()),
             AccessControlUnauthorizedAccount(_msgSender(), READER_ROLE)
         );
-        return results;
+        return studentInfo.results;
     }
 
     /**
-     * @notice Enrolls student in a new course
-     * @dev Only universities with WRITER_ROLE can call this
-     * @param _code Course code
-     * @param _name Course name
+     * @notice Registers a new course enrollment
+     * @dev Only callable by universities with WRITER_ROLE
+     * @param _code Course unique identifier
+     * @param _name Course full name
      * @param _degreeCourse Degree program name
      * @param _integer Whole number part of ECTS credits
      * @param _fraction Decimal part of ECTS credits
@@ -155,28 +197,28 @@ contract Student is AccessControlEnumerable {
             "",
             0
         );
-        results.push(r);
+        studentInfo.results.push(r);
     }
 
     /**
-     * @notice Assigns a grade to an enrolled course
+     * @notice Records a grade for an enrolled course
      * @dev Only the university that created the enrollment can grade it
-     * @param _code Course code to evaluate
+     * @param _code Course identifier to evaluate
      * @param _grade Grade to assign
-     * @param _date Date of evaluation
+     * @param _date Unix timestamp of evaluation
      */
     function evaluate(
         string calldata _code,
         string calldata _grade,
         uint _date
     ) external onlyRole(WRITER_ROLE) {
-        for (uint i; i < results.length; ++i) {
+        for (uint i; i < studentInfo.results.length; ++i) {
             if (
-                results[i].code.equal(_code) &&
-                results[i].university == _msgSender()
+                studentInfo.results[i].code.equal(_code) &&
+                studentInfo.results[i].university == _msgSender()
             ) {
-                results[i].grade = _grade;
-                results[i].date = _date;
+                studentInfo.results[i].grade = _grade;
+                studentInfo.results[i].date = _date;
                 return;
             }
         }
@@ -184,9 +226,10 @@ contract Student is AccessControlEnumerable {
     }
 
     /**
-     * @notice Grants read or write permission to a university
-     * @param _permissionType 0 for write, 1 for read access
-     * @param _university Address of the university to grant permission to
+     * @notice Grants permission to a university
+     * @dev Only callable by the student (DEFAULT_ADMIN_ROLE)
+     * @param _permissionType Permission type (0: write, 1: read)
+     * @param _university Address of university to grant permission to
      */
     function grantPermission(
         uint _permissionType,
@@ -202,7 +245,8 @@ contract Student is AccessControlEnumerable {
 
     /**
      * @notice Revokes all permissions from a university
-     * @param _university Address of the university
+     * @dev Only callable by the student (DEFAULT_ADMIN_ROLE)
+     * @param _university Address of university to revoke permissions from
      */
     function revokePermission(
         address _university
@@ -215,9 +259,10 @@ contract Student is AccessControlEnumerable {
     }
 
     /**
-     * @notice Gets all universities with a specific permission type
-     * @param _permissionType 0 for writers, 1 for readers
-     * @return Array of university addresses with the specified permission
+     * @notice Lists all universities with a specific permission type
+     * @dev Only callable by the student (DEFAULT_ADMIN_ROLE)
+     * @param _permissionType Permission type to query (0: writers, 1: readers)
+     * @return Array of university addresses with specified permission
      */
     function getPermissions(
         uint _permissionType
@@ -228,14 +273,5 @@ contract Student is AccessControlEnumerable {
         } else {
             return getRoleMembers(READER_ROLE);
         }
-    }
-
-    /**
-     * @notice Checks if a university has write permission
-     * @param uni Address of the university to check
-     * @return bool True if the university has write permission
-     */
-    function hasRole(address uni) external view returns (bool) {
-        return hasRole(WRITER_ROLE, uni);
     }
 }
