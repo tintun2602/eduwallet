@@ -1,6 +1,6 @@
 import "../styles/LoginPageStyle.css";
 
-import { Button, Col, Container, Image, Row } from "react-bootstrap";
+import { Col, Container, Image, Row } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { useAuth } from "../providers/AuthenticationProvider";
 import { JSX, useState } from "react";
@@ -24,14 +24,14 @@ export default function LoginPage(): JSX.Element {
     };
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        login({ id: id, password: password });
+        login({ id: parseInt(id), password: password });
     };
 
     return (
         <>
             <Container className="h-100 d-flex flex-column justify-content-center">
                 {/* App logo */}
-                <Row>
+                <Row className="mb-4">
                     <Col>
                         <span id='main-logo'>Edu<span className='purple-text'>Wallet</span></span>
                     </Col>
@@ -55,7 +55,7 @@ export default function LoginPage(): JSX.Element {
                         <Form.Label className="form-input-label">Password</Form.Label>
                         <Form.Control className="form-input" type="password" value={password} required onChange={ev => setPassword(ev.target.value)} />
                     </Form.Group>
-                    <Button type='submit' className='bg-warning buttonNext text-dark'>Login</Button>
+                    <button type='submit' className="mt-4">Login</button>
                 </Form>
             </Container>
         </>

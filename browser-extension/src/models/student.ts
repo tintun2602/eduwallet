@@ -124,6 +124,6 @@ export interface Result {
  * @author Diego Da Giau
  */
 export interface Credentials {
-    id: string;
+    id: number;
     password: string;
 }

@@ -18,12 +18,12 @@ const AuthContext = createContext<AuthenticationProviderProps>({ student: Studen
  * @returns {JSX.Element} The AuthContext provider with the authentication state and functions.
  */
 export default function AuthenticationProvider({ children }: { children: React.ReactNode }): JSX.Element {
-    const [student, setUser] = useState<StudentModel>(StudentModel.createEmpty());
+    const [student, setStudent] = useState<StudentModel>(StudentModel.createEmpty());
     const navigate = useNavigate();
     const login = async (credentials: Credentials) => {
         try {
-            const userTmp = await logIn(credentials);
-            setUser(userTmp);
+            const studentTemp = await logIn(credentials);
+            setStudent(studentTemp);
             navigate("/wallet");
         } catch (err) {
         }

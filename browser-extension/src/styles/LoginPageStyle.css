@@ -33,3 +33,9 @@
   color: #a199e4;
   font-size: 12px;
 }
+
+form button {
+  background-color: var(--secondary-color);
+  border-radius: 15px;
+  width: 100%;
+}
