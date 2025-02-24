@@ -15,46 +15,36 @@ function generateRandomString(length = 16) {
 /**
  * Derives a 256-bit private key from a password using PBKDF2.
  * @param {string} password - The student's password (random string).
- * @param {string} salt - A salt value (should be unique per user in production).
+ * @param {string} studentId - The student's unique ID number.
  * @returns {string} A private key formatted as a hex string with '0x' prefix.
  */
-function derivePrivateKey(password, salt) {
+function derivePrivateKey(password, studentId) {
     const iterations = 100000;
     const keyLength = 32; // 32 bytes = 256 bits
-    // Derive key using PBKDF2 with SHA-256.
+    // Use student ID as salt for uniqueness
+    const salt = `student-${studentId}`;
+    // Derive key using PBKDF2 with SHA-256
     const derivedKey = crypto.pbkdf2Sync(password, salt, iterations, keyLength, 'sha256').toString('hex');
     return '0x' + derivedKey;
 }
 
 /**
- * Creates a new student wallet.
- * @returns {object} An object containing the student's password, derived private key, and wallet.
+ * Creates a new student wallet using student ID as salt.
+ * @param {string} studentId - The student's unique ID number.
+ * @returns {object} An object containing the student's password and wallet.
  */
-function createStudentWallet() {
-    // Generate a random string to act as the student's password.
+function createStudentWallet(studentId) {
+    if (!studentId) {
+        throw new Error('Student ID is required to create wallet');
+    }
     const randomString = generateRandomString();
-    // For demonstration, we use a fixed salt. In production, use a unique salt for each user.
-    const salt = 'unique-university-salt';
-    // Derive the private key from the random string.
-    const privateKey = derivePrivateKey(randomString, salt);
-    // Create an Ethereum wallet using ethers.js.
+    const privateKey = derivePrivateKey(randomString, studentId);
     const wallet = new Wallet(privateKey);
     return {
         password: randomString,
-        privateKey: privateKey,
+        studentId: studentId,
         wallet: wallet
     };
-}
-
-/**
- * Simulates student login by deriving the wallet from the provided password.
- * @param {string} inputPassword - The password provided by the student.
- * @param {string} salt - The salt used during wallet creation.
- * @returns {Wallet} The wallet instance created from the derived private key.
- */
-function loginStudent(inputPassword, salt = 'unique-university-salt') {
-    const privateKey = derivePrivateKey(inputPassword, salt);
-    return new Wallet(privateKey);
 }
 
 async function main() {
@@ -83,13 +73,12 @@ async function main() {
 
     // Register university
     console.log("\nRegistering university...");
-    const subscribeTx = await studentsRegister.connect(university).subscribe();
-    await subscribeTx.wait();
+    const universityWallet = await studentsRegister.connect(university).subscribe("Politecnico di Torino", "Italy", "PoliTo");
     console.log(`University registered: ${university.address}`);
 
     // Create a student wallet from password
     console.log("\nCreating student wallet from password...");
-    const studentWalletInfo = createStudentWallet();
+    const studentWalletInfo = createStudentWallet(1);
     console.log(`Generated student password: ${studentWalletInfo.password}`);
     console.log(`Derived student wallet address: ${studentWalletInfo.wallet.address}`);
 
@@ -132,7 +121,7 @@ async function main() {
     await studentContract.connect(university).enroll(
         "14BHDOA",
         "Computer Science",
-        "Bechelor in COMPUTER SCIENCE",
+        "Bachelor in COMPUTER SCIENCE",
         8,
         0
     );
@@ -149,7 +138,7 @@ async function main() {
 
     // Simulate student authentication by recovering wallet from password
     console.log("\nSimulating student authentication with password...");
-    const recoveredWallet = new Wallet(derivePrivateKey(studentWalletInfo.password, 'unique-university-salt')).connect(provider);
+    const recoveredWallet = new Wallet(derivePrivateKey(studentWalletInfo.password, 1)).connect(provider);
     console.log(`Authenticated with wallet address: ${recoveredWallet.address}`);
 
     // Have the student check their own wallet using the recovered wallet
