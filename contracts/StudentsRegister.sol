@@ -5,8 +5,12 @@ pragma solidity >=0.8.2;
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import "./Student.sol";
+import "./University.sol";
 
 // Custom errors for better clarity
+error AlreadyExistingUniversity();
+error UniversityNotAccessible();
+error UniversityNotPresent();
 error AlreadyExistingStudent();
 error StudentNotAccessible();
 error StudentNotPresent();
@@ -16,21 +20,74 @@ error StudentNotPresent();
  * @author Diego Da Giau
  * @notice This contract manages student registrations and university verifications
  * @dev Implements OpenZeppelin's AccessControl for role-based permissions
+ *
+ * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors.
+ * ? Is it better to save universities wallets addresses directly in the student's wallet?
  */
 contract StudentsRegister is AccessControl {
     // Role definitions for access control
     bytes32 private constant UNIVERSITY_ROLE = keccak256("UNIVERSITY_ROLE");
     bytes32 private constant STUDENT_ROLE = keccak256("STUDENT_ROLE");
 
-    // Maps student addresses to their corresponding Student contract addresses
+    // State variables
+    mapping(address university => address universityWallet)
+        private universityWallets;
     mapping(address student => address studentWallet) private studentWallets;
 
     /**
-     * @notice Allows a university to subscribe to the system
-     * @dev Grants UNIVERSITY_ROLE to the caller
+     * @notice Registers a new university in the system
+     * @param _name University's full name
+     * @param _country University's country code (ISO 3166-1 alpha-2)
+     * @param _shortName University's abbreviation
      */
-    function subscribe() external {
+    function subscribe(
+        string calldata _name,
+        string calldata _country,
+        string calldata _shortName
+    ) external returns (address) {
+        require(
+            !hasRole(UNIVERSITY_ROLE, _msgSender()),
+            AlreadyExistingUniversity()
+        );
+
+        University newUniversity = new University(_name, _country, _shortName);
+        address addr = address(newUniversity);
+        universityWallets[_msgSender()] = addr;
         _grantRole(UNIVERSITY_ROLE, _msgSender());
+        return addr;
+    }
+
+    /**
+     * @notice Retrieves multiple university wallet addresses in a single call
+     * @dev Only accessible by registered universities and students
+     * @param _universities Array of university addresses to query
+     * @return addresses Array of corresponding wallet addresses
+     * @custom:throws UniversityNotAccessible if caller is not authorized
+     * @custom:throws UniversityNotPresent if address not correspond to any universities
+     */
+    function getUniversitiesWallets(
+        address[] calldata _universities
+    ) external view returns (address[] memory addresses) {
+        // Access control
+        if (
+            !hasRole(UNIVERSITY_ROLE, _msgSender()) &&
+            !hasRole(STUDENT_ROLE, _msgSender())
+        ) {
+            revert UniversityNotAccessible();
+        }
+
+        // Initialize return array in memory
+        addresses = new address[](_universities.length);
+
+        // Fetch all wallet addresses
+        for (uint i = 0; i < _universities.length; i++) {
+            address wallet = universityWallets[_universities[i]];
+            if (wallet == address(0)) {
+                revert UniversityNotPresent();
+            }
+            addresses[i] = wallet;
+        }
+        return addresses;
     }
 
     /**
