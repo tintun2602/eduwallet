@@ -51,3 +51,26 @@ export function formatCamelCaseString(str: string): string {
     const formattedString = spacedString.charAt(0).toUpperCase() + spacedString.slice(1);
     return formattedString;
 }
+
+/**
+ * Formats a Unix timestamp into a date string in DD-MM-YYYY format.
+ * @author Diego Da Giau
+ * @param {number} timestamp - Unix timestamp in milliseconds
+ * @returns {string} Formatted date string in DD-MM-YYYY format, or "N/D" string if timestamp is 0
+ */
+export function formatDate(timestamp: number): string {
+    // Return empty string for invalid/empty dates
+    if (timestamp === 0) {
+        return "N/D";
+    }
+
+    // Convert Unix timestamp to milliseconds and create Date
+    const date = new Date(timestamp);
+
+    // Format date using British locale
+    return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}

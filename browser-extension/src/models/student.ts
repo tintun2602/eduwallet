@@ -96,7 +96,7 @@ export class StudentModel {
             code: r.code,
             university: r.university,
             degreeCourse: r.degreeCourse,
-            grade: r.grade,
+            grade: r.grade === "" ? "N/D" : r.grade,
             date: r.date,
             ects: parseFloat(`${r.ects[0]}.${r.ects[1]}`),
         }));

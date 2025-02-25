@@ -6,6 +6,7 @@ import { Col, Container, Image, Row } from "react-bootstrap";
 import List from "../components/ListComponent";
 import { JSX } from "react";
 import { useUniversities } from "../providers/UniversitiesProvider";
+import { formatDate } from "../utils/utils";
 
 /**
  * CoursePage component renders the detailed page for a specific course.
@@ -33,7 +34,7 @@ export default function CoursePage(): JSX.Element {
         )?.name || 'Unknown University',
         degreeCourse: result.degreeCourse,
         grade: result.grade,
-        date: result.date,
+        date: formatDate(parseInt(`${result.date}`)),
     };
 
     // Navigation handler for back button
