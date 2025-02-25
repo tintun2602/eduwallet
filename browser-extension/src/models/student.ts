@@ -37,7 +37,7 @@ export class StudentModel {
      */
     static createEmpty(): StudentModel {
         const hdWallet = Wallet.createRandom();
-        return new StudentModel(-1, new Wallet(hdWallet.privateKey), '');
+        return new this(-1, new Wallet(hdWallet.privateKey), '');
     }
 
     /**
@@ -53,8 +53,8 @@ export class StudentModel {
      * @param universityId - The ID of the university
      * @returns {{ [key: string]: Result[] }} An object mapping degree courses to their results
      */
-    getResultsByUniversityGroupedByCourseDegree(universityId: number): { [key: string]: Result[] } {
-        return this.getResultsByUniversity(universityId).reduce((acc, result) => {
+    getResultsByUniversityGroupedByCourseDegree(universityAddress: string): { [key: string]: Result[] } {
+        return this.getResultsByUniversity(universityAddress).reduce((acc, result) => {
             if (!acc[result.degreeCourse]) {
                 acc[result.degreeCourse] = [];
             }
@@ -68,8 +68,21 @@ export class StudentModel {
      * @param universityId - The ID of the university
      * @returns {Result[]} Array of results for the specified university
      */
-    getResultsByUniversity(universityId: number): Result[] {
-        return this.results.filter(result => result.university === universityId);
+    getResultsByUniversity(universityAddress: string): Result[] {
+        return this.results.filter(result => result.university === universityAddress);
+    }
+
+    /**
+     * Retrieves a unique set of university addresses from student's results.
+     * @returns {Set<string>} A Set containing unique university addresses
+     * @remarks
+     * - Returns an empty Set if student has no results
+     * - Uses Set to automatically handle duplicates
+     * - Returns university addresses, not university names
+     */
+    getResultsUniversities(): Set<string> {
+        // Extract unique university addresses from results
+        return new Set(this.results.map(r => r.university));
     }
 
     /**
@@ -81,7 +94,7 @@ export class StudentModel {
         this.results = results.map(r => ({
             name: r.name,
             code: r.code,
-            university: parseInt(r.university),
+            university: r.university,
             degreeCourse: r.degreeCourse,
             grade: r.grade,
             date: r.date,
@@ -112,7 +125,7 @@ export class StudentModel {
 export interface Result {
     readonly name: string;
     readonly code: string;
-    readonly university: number;
+    readonly university: string;
     readonly degreeCourse: string;
     readonly grade: string;
     readonly date: bigint;

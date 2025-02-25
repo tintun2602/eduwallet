@@ -4,6 +4,9 @@ import { StudentsRegister__factory } from "../../../typechain-types/factories/co
 import { Student__factory } from "../../../typechain-types/factories/contracts/Student__factory"
 import { Credentials, StudentModel } from "../models/student"
 import { StudentsRegister } from '../../../typechain-types/contracts/StudentsRegister';
+import UniversityModel from '../models/university';
+import { University__factory } from "../../../typechain-types/factories/contracts/University__factory"
+
 
 /**
  * Network configuration
@@ -63,13 +66,47 @@ export async function getStudent(student: StudentModel): Promise<void> {
         student.name = name;
         student.surname = surname;
         student.birthPlace = birthPlace;
-        student.birthDate =  new Date(Number(birthDate)).toLocaleDateString("en-US");
-        student.country = country; 
+        student.birthDate = new Date(Number(birthDate)).toLocaleDateString("en-US");
+        student.country = country;
 
         // Update academic results
         student.updateResults(results);
     } catch (error) {
         console.error('Failed to fetch student data:', error);
         throw new Error('Could not retrieve student information');
+    }
+}
+
+/**
+ * Fetches university information from the blockchain and creates a UniversityModel instance.
+ * @param {StudentModel} student - The authenticated student making the request
+ * @param {string} universityAddress - The university's blockchain address
+ * @param {string} universityWallet - The university's wallet contract address
+ * @returns {Promise<UniversityModel>} A promise that resolves to the university model
+ * @throws {Error} If university data cannot be retrieved or connection fails
+ */
+export async function getUniversity(student: StudentModel, universityAddress: string, universityWallet: string): Promise<UniversityModel> {
+    try {
+        // Connect to university's smart contract using its wallet address
+        const contract = University__factory.connect(universityWallet, provider);
+
+        // Fetch university information using student's credentials
+        const {
+            name,
+            country,
+            shortName
+        } = await contract.connect(student.wallet).getUniversityInfo();
+
+        // Create and return new university model with fetched data
+        return new UniversityModel(
+            name,
+            country,
+            shortName,
+            universityAddress,
+            universityWallet
+        );
+    } catch (error) {
+        console.error('Failed to fetch university data:', error);
+        throw new Error('Could not retrieve university information');
     }
 }

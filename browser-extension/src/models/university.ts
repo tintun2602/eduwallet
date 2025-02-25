@@ -5,13 +5,18 @@
 export default class UniversityModel {
     /**
      * Constructs a new UniversityModel instance.
-     * @param {number} id - The university's ID.
-     * @param {string} name - The university's name.
-     * @param {string} shortName - The university's short name.
+     * @param {string} name - The full name of the university
+     * @param {string} country - The country code (ISO 3166-1 alpha-2)
+     * @param {string} shortName - The university's official abbreviation
+     * @param {string} universityAddress - The university's blockchain address
+     * @param {string} universityWalletAddress - The university's wallet address
      */
     constructor(
-        public readonly id: number,
         public readonly name: string,
-        public readonly shortName: string
-    ) { }
+        public readonly country: string,
+        public readonly shortName: string,
+        public readonly universityAddress: string,
+        public readonly universityWalletAddress: string,
+    ) {
+    }
 }

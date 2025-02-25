@@ -1,24 +1,48 @@
 import "../styles/HomePageStyle.css";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import { Result } from "../models/student";
-import { Dispatch, JSX, SetStateAction, useState } from "react";
+import { Dispatch, JSX, SetStateAction, useEffect, useState } from "react";
 import University from "../models/university";
 import Footer from "../components/FooterComponent";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthenticationProvider";
+import { useUniversities } from "../providers/UniversitiesProvider";
 
 /**
  * Homepage component renders the main page of the application.
  * @author Diego Da Giau
- * @param {HomepageProps} props - The properties passed to the component.
  * @returns {JSX.Element} The rendered homepage component.
  */
-export default function Homepage(props: HomepageProps): JSX.Element {
+export default function Homepage(): JSX.Element {
+    // Get authenticated student data from context
     const student = useAuth().student;
-    const universities = props.universities;
-    const creditNumber = student.getResults().filter(r => r.grade != "").reduce((a, v) => a + v.ects, 0);
-    const [activeUniversity, setActiveUniversity] = useState<number>(universities[0].id);
+
+    // Get universities data and fetch function from context
+    const universities = useUniversities().universities;
+    const fetchUniversities = useUniversities().fetchUniversities;
+
+    // Calculate total credits from completed courses (with grades)
+    const creditNumber = student.getResults()
+        .filter(r => r.grade !== "")
+        .reduce((acc, val) => acc + val.ects, 0);
+
+    // Track which university's results are being displayed
+    const [activeUniversity, setActiveUniversity] = useState<string>("");
+
+    // Navigation utility
     const navigate = useNavigate();
+
+    // Fetch universities data on component mount
+    useEffect(() => {
+        fetchUniversities();
+    }, []);
+
+    // Set first university as active when data is loaded
+    useEffect(() => {
+        if (universities.length > 0) {
+            setActiveUniversity(universities[0].universityAddress);
+        }
+    }, [universities.length]);
 
     return (
         <>
@@ -54,7 +78,7 @@ export default function Homepage(props: HomepageProps): JSX.Element {
             {/* Results part */}
             <Container>
                 <Row className="mt-3 mb-2">
-                    {universities.map(u => <UniversityButton key={u.id} university={u} activeUniversity={activeUniversity} setActiveUniversity={setActiveUniversity} />)}
+                    {universities.map(u => <UniversityButton key={u.universityAddress} university={u} activeUniversity={activeUniversity} setActiveUniversity={setActiveUniversity} />)}
                 </Row>
                 <Container className="p-0 main-content">
                     <UniversityResults results={student.getResultsByUniversityGroupedByCourseDegree(activeUniversity)} />
@@ -63,14 +87,6 @@ export default function Homepage(props: HomepageProps): JSX.Element {
             <Footer />
         </>
     );
-}
-
-/**
- * Properties for the Homepage component.
- * @author Diego Da Giau
- */
-interface HomepageProps {
-    universities: University[];
 }
 
 /**
@@ -85,8 +101,8 @@ function UniversityButton(props: UniversityButtonProps): JSX.Element {
     const setActiveUniversity = props.setActiveUniversity;
 
     return (
-        <Col className={"text-center" + " " + (activeUniversity === university.id ? "underline" : "")}>
-            <div className="menu-option" onClick={() => setActiveUniversity(university.id)}>{university.shortName}</div>
+        <Col className={"text-center" + " " + (activeUniversity === university.universityAddress ? "underline" : "")}>
+            <div className="menu-option" onClick={() => setActiveUniversity(university.universityAddress)}>{university.shortName}</div>
         </Col>
     );
 }
@@ -97,8 +113,8 @@ function UniversityButton(props: UniversityButtonProps): JSX.Element {
  */
 interface UniversityButtonProps {
     university: University;
-    activeUniversity: number;
-    setActiveUniversity: Dispatch<SetStateAction<number>>;
+    activeUniversity: string;
+    setActiveUniversity: Dispatch<SetStateAction<string>>;
 }
 
 /**

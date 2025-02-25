@@ -1,5 +1,6 @@
 import { Credentials, StudentModel } from "./models/student";
-import { getStudent, getStudentsRegister, getStudentWallet } from "./utils/contractsUtils";
+import UniversityModel from "./models/university";
+import { getStudent, getStudentsRegister, getStudentWallet, getUniversity } from "./utils/contractsUtils";
 
 /**
  * Authenticates a student and retrieves their information.
@@ -28,5 +29,43 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
         return student;
     } catch (error) {
         throw new Error('Authentication failed. Please check your credentials.');
+    }
+}
+
+/**
+ * Retrieves all universities associated with a student's academic results.
+ * @author Diego Da Giau
+ * @param {StudentModel} student - The student whose universities need to be retrieved
+ * @returns {Promise<UniversityModel[]>} Array of university models with their details
+ * @throws {Error} If universities cannot be retrieved or connection fails
+ */
+export async function getUniversities(student: StudentModel): Promise<UniversityModel[]> {
+    try {
+        // Get contract instance and university addresses in parallel
+        const [studentsRegister, universitiesAddresses] = await Promise.all([
+            getStudentsRegister(),
+            Array.from(student.getResultsUniversities())
+        ]);
+
+        // Get wallet addresses for all universities
+        const universitiesWallets = await studentsRegister
+            .connect(student.wallet)
+            .getUniversitiesWallets(universitiesAddresses);
+
+        // Create university models with full information
+        const universities: UniversityModel[] = [];
+        for (let i = 0; i < universitiesWallets.length; ++i) {
+            const university = await getUniversity(
+                student,
+                universitiesAddresses[i],
+                universitiesWallets[i]
+            );
+            universities.push(university);
+        }
+
+        return universities;
+    } catch (error) {
+        console.error('Universities retrieval failed:', error);
+        throw new Error('Failed to retrieve universities. Please try again later.');
     }
 }
