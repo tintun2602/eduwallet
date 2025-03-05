@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",               // Output directory for compiled files
+    "declaration": true,            // Generate .d.ts files for type definitions
+    "declarationMap": true,         // Generate .d.ts.map files for better debugging
+    "sourceMap": true,              // Generate .js.map files for debugging
+    "module": "ESNext",             // Use latest ES module system
+    "moduleResolution": "Node",     // Resolve modules like Node.js
+    "target": "ES2020",             // Modern JavaScript output
+    "lib": ["ES2020"],              // Include standard library features
+    "strict": true,                 // Enable all strict type checks
+    "esModuleInterop": true,        // Improve compatibility with CommonJS/ES modules
+    "skipLibCheck": true,           // Skip checking declaration files (improves build speed)
+    "forceConsistentCasingInFileNames": true, // Prevent inconsistent casing in imports
+    "rootDir": "src",               // Your TypeScript source files
+    "resolveJsonModule": true       // Allow importing JSON files
+  },
+  "include": ["src"],               // Only compile files in "src" folder
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]  // Exclude tests and built files
+}
