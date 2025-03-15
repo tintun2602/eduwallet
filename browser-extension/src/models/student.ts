@@ -99,6 +99,7 @@ export class StudentModel {
             grade: r.grade === "" ? "N/D" : r.grade,
             date: r.date,
             ects: parseFloat(`${r.ects[0]}.${r.ects[1]}`),
+            certificateCid: r.certificateHash,
         }));
     }
 
@@ -130,6 +131,7 @@ export interface Result {
     readonly grade: string;
     readonly date: bigint;
     readonly ects: number;
+    readonly certificateCid: string;
 }
 
 /**

@@ -17,19 +17,21 @@ export default function List(props: ListProps): JSX.Element {
     // Iterate over the keys of the object and create list items
     for (let i = 0; i < keys.length; ++i) {
         list.push(
-            <Container key={i} className="list">
-                <Row>
-                    <Col className="purple-text text-13 list-title">
-                        {formatCamelCaseString(keys[i])}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col className="text-16 list-content">
-                        {obj[keys[i]]}
-                    </Col>
-                </Row>
+            <>
+                <Container key={i} className="list">
+                    <Row>
+                        <Col className="purple-text text-13 list-title">
+                            {formatCamelCaseString(keys[i])}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="text-16 list-content">
+                            {obj[keys[i]]}
+                        </Col>
+                    </Row>
+                </Container>
                 {i === (keys.length - 1) ? <></> : <hr className="my-2" />}
-            </Container>
+            </>
         );
     }
 

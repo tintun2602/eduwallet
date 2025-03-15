@@ -1,10 +1,15 @@
-const hre = require("hardhat");
-const fs = require('fs');
+import { ethers } from 'hardhat';
+import * as fs from 'fs';
+import { StudentsRegister } from '../typechain-types';
 
 const FILE = ".env";
 
-function write_env_variable(contract_address) {
-    const envVar = `CONTRACT_ADDRESS=${contract_address}`;
+/**
+ * Writes or updates the contract address in the .env file
+ * @param contractAddress - The deployed contract address
+ */
+function writeEnvVariable(contractAddress: string): void {
+    const envVar = `CONTRACT_ADDRESS=${contractAddress}`;
     
     // Ensure .env file exists, create it if missing
     if (!fs.existsSync(FILE)) {
@@ -26,19 +31,31 @@ function write_env_variable(contract_address) {
     }
 }
 
-async function main() {
+interface DeploymentResult {
+    studentsRegister: StudentsRegister;
+    address: string;
+}
+
+/**
+ * Deploys the StudentsRegister contract
+ * @returns Object containing the deployed contract instance and its address
+ */
+async function main(): Promise<DeploymentResult> {
     console.log("Deploying StudentsRegister contract...");
 
-    const StudentsRegister = await hre.ethers.getContractFactory("StudentsRegister");
+    const StudentsRegister = await ethers.getContractFactory("StudentsRegister");
     const studentsRegister = await StudentsRegister.deploy();
 
     await studentsRegister.waitForDeployment();
 
     const address = await studentsRegister.getAddress();
     console.log(`StudentsRegister deployed to: ${address}`);
-    write_env_variable(address);
+    writeEnvVariable(address);
 
-    return { studentsRegister, address };
+    return { 
+        studentsRegister: studentsRegister,
+        address
+    };
 }
 
 // Execute standalone deployment
@@ -52,4 +69,4 @@ if (require.main === module) {
 }
 
 // Export for importing in other scripts
-module.exports = main;
+export default main;

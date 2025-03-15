@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "npx hardhat run scripts/interact.js --network localhost"
+    "deploy": "npx hardhat run scripts/interact.ts --network localhost"
   },
   "repository": {
     "type": "git",

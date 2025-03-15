@@ -1,4 +1,5 @@
 import "../styles/CoursePageStyle.css";
+import "../styles/ListComponentStyle.css"
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { Result } from "../models/student";
@@ -7,6 +8,7 @@ import List from "../components/ListComponent";
 import { JSX } from "react";
 import { useUniversities } from "../providers/UniversitiesProvider";
 import { formatDate } from "../utils/utils";
+import { NETWORK_CONFIG } from "../utils/contractsUtils";
 
 /**
  * CoursePage component renders the detailed page for a specific course.
@@ -67,8 +69,45 @@ export default function CoursePage(): JSX.Element {
                 {/* Course details */}
                 <Row>
                     <List object={resultObj} />
+                    {/* Render certificate section if CID exists */}
+                    {result.certificateCid !== "" ? <Certificate certificateCID={result.certificateCid} /> : <></>}
                 </Row>
             </Container>
         </>
     );
+}
+
+/**
+ * Certificate component displays a link to the course certificate stored on IPFS
+ * @param {CertificateProps} props - Component props
+ * @returns {JSX.Element} Certificate section with IPFS link
+ */
+function Certificate(props: CertificateProps): JSX.Element {
+    const certificateCid = props.certificateCID;
+
+    return (
+        <>
+            <hr className="my-2" />
+            <Container className="list">
+                <Row>
+                    <Col className="purple-text text-13 list-title">
+                        Certificate
+                    </Col>
+                </Row>
+                <Row>
+                    <Col className="text-16 list-content">
+                        <a className="" href={NETWORK_CONFIG.ipfsGateway + certificateCid} target="_blank">Click to open the certificate</a>
+                    </Col>
+                </Row>
+            </Container>
+        </>
+    );
+}
+
+/**
+ * Properties for the Certificate component.
+ * @author Diego Da Giau
+ */
+interface CertificateProps {
+    certificateCID: string,
 }

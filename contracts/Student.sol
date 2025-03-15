@@ -16,7 +16,7 @@ error WrongRole();
  * @author Diego Da Giau
  * @notice Manages a student's academic records and university permissions
  * @dev Implements role-based access control for universities to manage student records
- * 
+ *
  * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors.
  * ? Is it better to save data as immutable and then return the struct when getters for student's info are called?
  */
@@ -46,6 +46,7 @@ contract Student is AccessControlEnumerable {
      * @param ects ECTS credits for the course
      * @param grade Final grade (empty if not evaluated)
      * @param date Date when the grade was assigned
+     * @param certificateHash CID of the IPFS file representing the certificate
      */
     struct Result {
         string code;
@@ -55,6 +56,7 @@ contract Student is AccessControlEnumerable {
         Ects ects;
         string grade;
         uint date;
+        string certificateHash;
     }
 
     /**
@@ -195,7 +197,8 @@ contract Student is AccessControlEnumerable {
             _degreeCourse,
             Ects(_integer, _fraction),
             "",
-            0
+            0,
+            ""
         );
         studentInfo.results.push(r);
     }
@@ -210,7 +213,8 @@ contract Student is AccessControlEnumerable {
     function evaluate(
         string calldata _code,
         string calldata _grade,
-        uint _date
+        uint _date,
+        string calldata _certificateHash
     ) external onlyRole(WRITER_ROLE) {
         for (uint i; i < studentInfo.results.length; ++i) {
             if (
@@ -219,6 +223,7 @@ contract Student is AccessControlEnumerable {
             ) {
                 studentInfo.results[i].grade = _grade;
                 studentInfo.results[i].date = _date;
+                studentInfo.results[i].certificateHash = _certificateHash;
                 return;
             }
         }

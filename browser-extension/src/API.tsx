@@ -28,6 +28,7 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
 
         return student;
     } catch (error) {
+        console.log("Student login failed: ", error);
         throw new Error('Authentication failed. Please check your credentials.');
     }
 }

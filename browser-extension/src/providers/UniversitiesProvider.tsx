@@ -35,7 +35,6 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
             const universitiesTmp = await getUniversities(student);
             setUniversities(universitiesTmp);
         } catch (error) {
-            console.error('Failed to fetch universities:', error);
             setUniversities([]);
         }
     };
