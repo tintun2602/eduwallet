@@ -8,6 +8,8 @@ import { getStudent, getStudentsRegister, getStudentWallet, getUniversity } from
  * @param {Credentials} credentials - The student's login credentials (ID and password)
  * @returns {Promise<StudentModel>} A promise that resolves to the authenticated student's data
  * @throws {Error} If authentication fails or student data cannot be retrieved
+ * 
+ * TODO: change from Promise.all to async call without await
  */
 export async function logIn(credentials: Credentials): Promise<StudentModel> {
     try {
@@ -39,6 +41,8 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
  * @param {StudentModel} student - The student whose universities need to be retrieved
  * @returns {Promise<UniversityModel[]>} Array of university models with their details
  * @throws {Error} If universities cannot be retrieved or connection fails
+ * 
+ * TODO: change from Promise.all to async call without await
  */
 export async function getUniversities(student: StudentModel): Promise<UniversityModel[]> {
     try {

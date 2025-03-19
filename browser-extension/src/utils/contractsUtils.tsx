@@ -23,7 +23,6 @@ const provider = new ethers.JsonRpcProvider(NETWORK_CONFIG.url);
 /**
  * Retrieves the StudentsRegister contract instance.
  * @author Diego Da Giau
- * @throws {Error} If contract address or network URL is not configured
  * @returns {Promise<StudentsRegister>} Connected contract instance
  */
 export async function getStudentsRegister(): Promise<StudentsRegister> {

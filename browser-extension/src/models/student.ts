@@ -20,7 +20,7 @@ export class StudentModel {
     private results: Result[] = [];
 
     /**
-     * Creates a new StudenModel instance.
+     * Creates a new StudentModel instance.
      * @param id - The student's ID
      * @param wallet - The student's Ethereum wallet
      * @param contractAddress - The student's smart contract address
