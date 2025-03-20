@@ -19,6 +19,8 @@ error WrongRole();
  *
  * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors.
  * ? Is it better to save data as immutable and then return the struct when getters for student's info are called?
+ * ? Save ECTS in gwei, fetch them and then convert?
+ * ? Why students have a different function than universities to fetch information?
  */
 contract Student is AccessControlEnumerable {
     using Strings for string;
