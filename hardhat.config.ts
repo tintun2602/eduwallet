@@ -5,9 +5,12 @@ const config: HardhatUserConfig = {
   solidity: "0.8.28",
   networks: {
     hardhat: {
-      accounts: {
-        count: 10
-      }
+      accounts: [
+        {
+          balance: "10000000000000000000000000000000",
+          privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
+        }
+      ]
     },
     localhost: {
       url: "http://127.0.0.1:8545",

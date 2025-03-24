@@ -4,7 +4,6 @@
   "description": "The project aims to revolutionize university credit management by storing students' academic information on the blockchain. Through EduWallet APIs, universities can easily synchronize grades and credits, simplifying the transfer of academic records between institutions. EduWallet ensures secure, efficient record-keeping and easy credit transferability across institutions.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "npx hardhat run scripts/interact.ts --network localhost"
   },
   "repository": {
@@ -26,6 +25,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.2.0"
+    "@openzeppelin/contracts": "^5.2.0",
+    "dotenv": "^16.4.7"
   }
 }
