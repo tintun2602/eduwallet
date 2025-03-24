@@ -1,83 +1,76 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { ethers, Wallet, Contract, ContractTransaction } from 'ethers';
+import { ethers, Wallet } from 'ethers';
 import * as crypto from 'crypto';
-import * as deployScript from './deploy';
-import { StudentsRegister, Student } from '../typechain-types';
+import { StudentsRegister } from '../typechain-types';
+import * as eduwallet from 'eduwallet-sdk'
+import * as hre from 'hardhat';
+import * as dotenv from 'dotenv'
+import * as fs from 'fs';
+import * as path from 'path';
 
-// Define interfaces for better type safety
-interface StudentWalletInfo {
-    password: string;
-    studentId: number;
-    wallet: Wallet;
+const PROVIDER = hre.ethers.provider;
+dotenv.config();
+
+async function deployStudentsRegister(): Promise<StudentsRegister> {
+    const StudentsRegister = await hre.ethers.getContractFactory("StudentsRegister");
+    const studentsRegister = await StudentsRegister.deploy();
+
+    await studentsRegister.waitForDeployment();
+
+    const address = await studentsRegister.getAddress();
+    console.log(`\n---------------------------------------------------`);
+    console.log(`STUDENT REGISTER:`);
+    console.log(`Address: ${address}`);
+    console.log(`---------------------------------------------------\n`);
+
+    return studentsRegister;
 }
 
-/**
- * Generates a random hexadecimal string.
- * @param length - Number of random bytes (default: 16).
- * @returns Random string in hex.
- */
-function generateRandomString(length: number = 16): string {
-    return crypto.randomBytes(length).toString('hex');
+async function getUniversityWallet(): Promise<Wallet> {
+    const privateKey = crypto.randomBytes(32).toString('hex');
+    const universityPrivateKey = `0x${privateKey}`;
+    const wallet = new Wallet(universityPrivateKey);
+
+    const balance = ethers.parseEther("10000000.0")
+    await hre.network.provider.send("hardhat_setBalance", [
+        wallet.address,
+        `0x${balance.toString(16)}`,
+    ]);
+    console.log(`---------------------------------------------------`);
+    console.log(`UNIVERSITY:`);
+    console.log(`Address: ${wallet.address}`)
+    console.log(`Balance: ${ethers.formatEther(balance)}`);
+    console.log(`---------------------------------------------------`);
+
+    return wallet.connect(PROVIDER);
 }
 
-/**
- * Derives a 256-bit private key from a password using PBKDF2.
- * @param password - The student's password (random string).
- * @param studentId - The student's unique ID number.
- * @returns A private key formatted as a hex string with '0x' prefix.
- */
-function derivePrivateKey(password: string, studentId: number): string {
-    const iterations = 100000;
-    const keyLength = 32; // 32 bytes = 256 bits
-    const salt = `student-${studentId}`;
-    const derivedKey = crypto.pbkdf2Sync(password, salt, iterations, keyLength, 'sha256').toString('hex');
-    return '0x' + derivedKey;
+async function getDeployer() {
+    const [deployer] = await hre.ethers.getSigners();
+    console.log(`---------------------------------------------------`);
+    console.log(`DEPLOYER:`);
+    console.log(`Address: ${await deployer.getAddress()}`)
+    console.log(`---------------------------------------------------`);
+
+    return deployer;
 }
 
-/**
- * Creates a new student wallet using student ID as salt.
- * @param studentId - The student's unique ID number.
- * @returns An object containing the student's password and wallet.
- */
-function createStudentWallet(studentId: number): StudentWalletInfo {
-    if (!studentId) {
-        throw new Error('Student ID is required to create wallet');
-    }
-    const randomString = generateRandomString();
-    const privateKey = derivePrivateKey(randomString, studentId);
-    const wallet = new Wallet(privateKey);
-    return {
-        password: randomString,
-        studentId: studentId,
-        wallet: wallet
-    };
-}
+
 
 async function main(): Promise<void> {
-    const hre = require('hardhat') as HardhatRuntimeEnvironment;
-
-    // Deploy contract if address not provided, otherwise connect to existing deployment
     let studentsRegister: StudentsRegister;
-    let studentsRegisterAddress = process.env.CONTRACT_ADDRESS;
-
-    if (!studentsRegisterAddress) {
-        console.log("No contract address provided, deploying new contract...");
-        const deployment = await deployScript.default();
-        studentsRegister = deployment.studentsRegister as StudentsRegister;
-        studentsRegisterAddress = deployment.address;
+    if (!process.env.DEPLOYED) {
+        studentsRegister = await deployStudentsRegister();
     } else {
-        console.log(`Connecting to existing contract at ${studentsRegisterAddress}`);
-        const StudentsRegister = await hre.ethers.getContractFactory("StudentsRegister");
-        studentsRegister = StudentsRegister.attach(studentsRegisterAddress) as StudentsRegister;
+        studentsRegister = eduwallet.getStudentsRegister();
+        console.log(`\n---------------------------------------------------`);
+        console.log(`STUDENT REGISTER (OLD):`);
+        console.log(`Address: ${process.env.DEPLOYED}`);
+        console.log(`---------------------------------------------------\n`);
     }
-
-    // Get signers
-    const [deployer, university] = await hre.ethers.getSigners();
-    const provider = hre.ethers.provider;
-
-    console.log("Using accounts:");
-    console.log(`- Deployer: ${deployer.address}`);
-    console.log(`- University: ${university.address}`);
+    const [deployer, university] = await Promise.all([
+        getDeployer(),
+        getUniversityWallet()
+    ]);
 
     // Register university
     console.log("\nRegistering university...");
@@ -87,94 +80,101 @@ async function main(): Promise<void> {
         "PoliTo"
     );
     await universityTx.wait();
-    console.log(`University registered: ${university.address}`);
+    console.log(`University registered`);
 
     // Create a student wallet from password
-    console.log("\nCreating student wallet from password...");
-    const studentWalletInfo = createStudentWallet(1);
-    console.log(`Generated student password: ${studentWalletInfo.password}`);
-    console.log(`Derived student wallet address: ${studentWalletInfo.wallet.address}`);
+    console.log("\nCreating student wallet...");
+    const student = await eduwallet.registerStudent(
+        university,
+        {
+            name: "Diego",
+            surname: "Da Giau",
+            birthDate: "2001-05-22",
+            birthPlace: "Pieve di Cadore",
+            country: "Italy",
+        });
+
+    console.log(`---------------------------------------------------`);
+    console.log(`STUDENT:`);
+    console.log(`Address: ${student.ethWallet.address}`);
+    console.log(`Wallet address: ${student.academicWalletAddress}`);
+    console.log(`Id: ${student.id}`);
+    console.log(`Password: ${student.password}`);
+    console.log(`---------------------------------------------------`);
+
 
     // Fund the wallet
     console.log("\nFunding the password-derived wallet...");
-    const fundTx = await deployer.sendTransaction({
-        to: studentWalletInfo.wallet.address,
-        value: ethers.parseEther("100.0")
-    });
-    await fundTx.wait();
-    console.log(`Wallet funded with 100 ETH: ${studentWalletInfo.wallet.address}`);
+    const balance = ethers.parseEther("10000.0")
+    await hre.network.provider.send("hardhat_setBalance", [
+        student.ethWallet.address,
+        `0x${balance.toString(16)}`,
+    ]);
+    console.log(`Balance: ${ethers.formatEther(balance)}`);
 
-    // Connect wallet to provider
-    const connectedWallet = studentWalletInfo.wallet.connect(provider);
-
-    // Register student
-    console.log("\nRegistering student...");
-    const birthDate = Math.floor(new Date("2000-01-01").getTime() / 1000);
-
-    const registerTx = await studentsRegister.connect(university).registerStudent(
-        studentWalletInfo.wallet.address,
-        "John",
-        "Doe",
-        birthDate,
-        "Milan",
-        "Italy"
-    );
-    await registerTx.wait();
-
-    // Get student wallet from contract
-    const contractStudentWallet = await studentsRegister.connect(university).getStudentWallet(
-        studentWalletInfo.wallet.address
-    );
-    console.log(`\nStudent smart wallet address from contract: ${contractStudentWallet}`);
-
+    const courses: eduwallet.CourseInfo[] = [
+        {
+            code: "14BHDOA",
+            name: "Computer Science",
+            degreeCourse: "Bachelor in COMPUTER SCIENCE",
+            ects: 8.0,
+        },
+        {
+            code: "14BHDYT",
+            name: "Prova",
+            degreeCourse: "Master in COMPUTER SCIENCE",
+            ects: 7.5,
+        },
+    ]
     // Enroll student
     console.log("\nEnrolling student...");
-    const Student = await hre.ethers.getContractFactory("Student");
-    const studentContract = Student.attach(contractStudentWallet) as Student;
+    await eduwallet.enrollStudent(university, student.academicWalletAddress, courses);
 
-    await studentContract.connect(university).enroll(
-        "14BHDOA",
-        "Computer Science",
-        "Bachelor in COMPUTER SCIENCE",
-        8,
-        0
-    );
-
-    await studentContract.connect(university).enroll(
-        "14BHDYT",
-        "Prova",
-        "Master in COMPUTER SCIENCE",
-        7,
-        5
-    );
-
-    // Evaluate student
+    const pdfPath = "./certificate.pdf"
+    const fileBuffer = fs.readFileSync(pdfPath);
+    const fileName = path.basename(pdfPath);
+    const certificateFile = new File([fileBuffer], fileName, { type: 'application/pdf' });
+    const evaluations: eduwallet.Evaluation[] = [{
+        code: "14BHDOA",
+        evaluationDate: "2025-03-18",
+        grade: "30L/30",
+        certificate: "./certificate.pdf",
+    }];
     console.log("\nEvaluating student...");
-    await studentContract.connect(university).evaluate(
-        "14BHDOA",
-        "30L/30",
-        new Date().getTime(),
-        "bafkreihayzzaoar5utwjileeljsib32oq5axxoutoglfrcbkvvkivm2uhq"
-    );
+    await eduwallet.evaluateStudent(university, student.academicWalletAddress, evaluations);
 
-    // Simulate authentication
-    console.log("\nSimulating student authentication...");
-    const recoveredWallet = new Wallet(
-        derivePrivateKey(studentWalletInfo.password, 1)
-    ).connect(provider);
-    console.log(`Authenticated with wallet address: ${recoveredWallet.address}`);
+    console.log("\nFetching student info...");
+    const studentNew = await eduwallet.getStudentInfo(university, student.academicWalletAddress);
+    console.log(`---------------------------------------------------`);
+    console.log(`STUDENT:`);
+    console.log(`Name: ${studentNew.name}`);
+    console.log(`Surname: ${studentNew.surname}`);
+    console.log(`Birth date: ${studentNew.birthDate}`);
+    console.log(`Birth place: ${studentNew.birthPlace}`);
+    console.log(`Country: ${studentNew.country}`);
+    console.log(`---------------------------------------------------`);
 
-    // Test authentication
-    console.log("\nTesting authentication...");
-    try {
-        const studentWallet = await studentsRegister.connect(recoveredWallet).getStudentWallet(
-            recoveredWallet.address
-        );
-        console.log(`Student successfully retrieved their wallet: ${studentWallet}`);
-        console.log("Authentication successful!");
-    } catch (error) {
-        console.error("Authentication failed:", error instanceof Error ? error.message : String(error));
+    console.log("\nFetching complete student info with results...");
+    const studentComplete = await eduwallet.getStudentWithResult(university, student.academicWalletAddress);
+    console.log(`---------------------------------------------------`);
+    console.log(`STUDENT:`);
+    console.log(`Name: ${studentComplete.name}`);
+    console.log(`Surname: ${studentComplete.surname}`);
+    console.log(`Birth date: ${studentComplete.birthDate}`);
+    console.log(`Birth place: ${studentComplete.birthPlace}`);
+    console.log(`Country: ${studentComplete.country}`);
+    console.log(`Results:`);
+    for (const result of studentComplete.results ?? []) {
+        console.log(`\tCourse Code: ${result.code}`);
+        console.log(`\tCourse Name: ${result.name}`);
+        console.log(`\tUniversity: ${result.university.name}`);
+        console.log(`\tDegree course: ${result.degreeCourse}`);
+        console.log(`\tECTS: ${result.ects || "N/A"}`);
+        console.log(`\tDate: ${result.evaluationDate ? result.evaluationDate : "N/A"}`);
+        console.log(`\tGrade: ${result.grade || "N/A"}`);
+        console.log(`\tCertificate: ${result.certificate || "N/A"}\n`);
     }
+    console.log(`---------------------------------------------------`);
 
     console.log("\nInteraction script completed successfully!");
 }
