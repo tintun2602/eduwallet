@@ -1,4 +1,4 @@
-import { Wallet } from "ethers";
+import type { Wallet } from "ethers";
 import type { CourseInfo, Evaluation, Student, StudentCredentials, StudentData } from "./types";
 import { computeDate, createStudentWallet, generateStudent, getStudentContract, getStudentsRegister, publishCertificate } from "./utils";
 import { provider } from "./conf";
@@ -6,8 +6,10 @@ import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc.js';
 import type { Student as StudentContract } from '@typechain/contracts/Student';
 
+
 export type { StudentCredentials, StudentData, CourseInfo, Evaluation, Student };
 export { getStudentsRegister };
+
 
 dayjs.extend(utc);
 

@@ -1,4 +1,5 @@
-import { Wallet } from 'ethers';
+import type { Wallet } from 'ethers';
+
 
 /**
  * Core authentication and wallet information for a student.

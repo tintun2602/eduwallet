@@ -1,16 +1,17 @@
 import type { Student as StudentInterface, University, AcademicResult, StudentEthWalletInfo } from "./types";
 import { blockchainConfig, ipfsConfig, provider, s3Client } from "./conf";
-import { StudentsRegister } from '@typechain/contracts/StudentsRegister';
+import type { StudentsRegister } from '@typechain/contracts/StudentsRegister';
 import { StudentsRegister__factory } from "@typechain/factories/contracts/StudentsRegister__factory"
-import { Student } from '@typechain/contracts/Student';
+import type { Student } from '@typechain/contracts/Student';
 import { Student__factory } from '@typechain/factories/contracts/Student__factory'
 import { University__factory } from '@typechain/factories/contracts/University__factory'
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import dayjs from 'dayjs';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import { Wallet } from 'ethers';
 import utc from 'dayjs/plugin/utc.js';
+import * as crypto from 'crypto';
+import { readFileSync } from 'fs';
+import { Wallet } from 'ethers';
+
 
 export function createStudentWallet(): StudentEthWalletInfo {
     const studentId = generateRandomString(10);
@@ -58,7 +59,7 @@ export function computeDate(date: bigint): string {
 export async function publishCertificate(certificate: Buffer | string): Promise<string> {
     let bufferFile: Buffer;
     if (typeof certificate === "string") {
-        bufferFile = fs.readFileSync(certificate);
+        bufferFile = readFileSync(certificate);
     } else {
         bufferFile = certificate;
     }
@@ -116,7 +117,7 @@ function generateResult(result: Student.ResultStructOutput, university: Universi
         code: result.code,
         university,
         degreeCourse: result.degreeCourse,
-        ects: Number(result.ects)/100,
+        ects: Number(result.ects) / 100,
         grade: result.grade || undefined,
         evaluationDate: result.date ? computeDate(result.date) : undefined,
         certificate: result.certificateHash ? `${ipfsConfig.gatewayUrl}${result.certificateHash}` : undefined,
