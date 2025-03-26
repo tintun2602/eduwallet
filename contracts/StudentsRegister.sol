@@ -94,34 +94,18 @@ contract StudentsRegister is AccessControl {
      * @notice Registers a new student in the system
      * @dev Only callable by addresses with UNIVERSITY_ROLE
      * @param _student Address of the student to register
-     * @param _name Student's first name
-     * @param _surname Student's last name
-     * @param _birthDate Student's birth date as Unix timestamp
-     * @param _birthPlace Student's place of birth
-     * @param _country Student's country of birth
+     * @param _basicInfo Struct containing core biographical student's info
      * @custom:throws AlreadyExistingStudent if student is already registered
      */
     function registerStudent(
         address _student,
-        string calldata _name,
-        string calldata _surname,
-        uint _birthDate,
-        string calldata _birthPlace,
-        string calldata _country
+        Student.StudentBasicInfo calldata _basicInfo
     ) external onlyRole(UNIVERSITY_ROLE) {
         // Check if student is not already registered
         require(!hasRole(STUDENT_ROLE, _student), AlreadyExistingStudent());
 
         // Deploy new Student contract for this student
-        Student newStudent = new Student(
-            _msgSender(),
-            _student,
-            _name,
-            _surname,
-            _birthDate,
-            _birthPlace,
-            _country
-        );
+        Student newStudent = new Student(_msgSender(), _student, _basicInfo);
 
         // Store student's contract address and grant student role
         studentWallets[_student] = address(newStudent);

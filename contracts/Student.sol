@@ -17,7 +17,7 @@ error WrongRole();
  * @notice Manages a student's academic records and university permissions
  * @dev Implements role-based access control for universities to manage student records
  *
- * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors. Basic info can be a field of StudentInfo. See library for the validation part.
+ * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors. See library for the validation part.
  * ? Enroll and Evaluate with an array of struct as parameter?
  * ? Save ECTS in gwei, fetch them and then convert?
  * ? Why students have a different function than universities to fetch information?
@@ -83,19 +83,11 @@ contract Student is AccessControlEnumerable {
 
     /**
      * @dev Structure containing complete student information
-     * @param name Student's first name
-     * @param surname Student's last name
-     * @param birthDate Unix timestamp of student's birth date
-     * @param birthPlace Student's place of birth
-     * @param country Student's country of birth
+     * @param basicInfo Student's personal information
      * @param results Array of all academic results
      */
     struct StudentInfo {
-        string name;
-        string surname;
-        uint birthDate;
-        string birthPlace;
-        string country;
+        StudentBasicInfo basicInfo;
         Result[] results;
     }
 
@@ -107,26 +99,14 @@ contract Student is AccessControlEnumerable {
      * @dev Initializes student information and grants initial roles
      * @param _university Initial university address to receive WRITER_ROLE
      * @param _student Student's address to receive DEFAULT_ADMIN_ROLE
-     * @param _name Student's first name
-     * @param _surname Student's last name
-     * @param _birthDate Unix timestamp of student's birth date
-     * @param _birthPlace Student's place of birth
-     * @param _country Student's country of birth
+     * @param _basicInfo Struct containing core biographical student's info
      */
     constructor(
         address _university,
         address _student,
-        string memory _name,
-        string memory _surname,
-        uint _birthDate,
-        string memory _birthPlace,
-        string memory _country
+        StudentBasicInfo memory _basicInfo
     ) {
-        studentInfo.name = _name;
-        studentInfo.surname = _surname;
-        studentInfo.birthDate = _birthDate;
-        studentInfo.birthPlace = _birthPlace;
-        studentInfo.country = _country;
+        studentInfo.basicInfo = _basicInfo;
 
         _grantRole(DEFAULT_ADMIN_ROLE, _student);
         _grantRole(WRITER_ROLE, _university);
@@ -156,14 +136,7 @@ contract Student is AccessControlEnumerable {
         view
         returns (StudentBasicInfo memory)
     {
-        return
-            StudentBasicInfo({
-                name: studentInfo.name,
-                surname: studentInfo.surname,
-                birthDate: studentInfo.birthDate,
-                birthPlace: studentInfo.birthPlace,
-                country: studentInfo.country
-            });
+        return studentInfo.basicInfo;
     }
 
     /**
@@ -215,6 +188,7 @@ contract Student is AccessControlEnumerable {
      * @param _code Course identifier to evaluate
      * @param _grade Grade to assign
      * @param _date Unix timestamp of evaluation
+     * @param _certificateHash CID of the certificate stored on IPFS
      */
     function evaluate(
         string calldata _code,
