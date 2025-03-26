@@ -19,7 +19,6 @@ error WrongRole();
  *
  * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors. See library for the validation part.
  * ? Enroll and Evaluate with an array of struct as parameter?
- * ? Save ECTS in gwei, fetch them and then convert?
  * ? Why students have a different function than universities to fetch information?
  */
 contract Student is AccessControlEnumerable {
@@ -32,16 +31,6 @@ contract Student is AccessControlEnumerable {
     // Role definition for access request control
     bytes32 public constant READER_APPLICANT = keccak256("READER_APPLICANT");
     bytes32 public constant WRITER_APPLICANT = keccak256("WRITER_APPLICANT");
-
-    /**
-     * @dev Represents ECTS credits with integer and fractional parts
-     * @param integer The whole number part of the ECTS credits
-     * @param fraction The decimal part of the ECTS credits
-     */
-    struct Ects {
-        uint8 integer;
-        uint8 fraction;
-    }
 
     /**
      * @dev Represents an academic result/course enrollment
@@ -59,7 +48,7 @@ contract Student is AccessControlEnumerable {
         string name;
         address university;
         string degreeCourse;
-        Ects ects;
+        bytes7 ects;
         string grade;
         uint date;
         string certificateHash;
@@ -108,7 +97,9 @@ contract Student is AccessControlEnumerable {
     ) {
         studentInfo.basicInfo = _basicInfo;
 
+        // Set the student as admin of the wallet
         _grantRole(DEFAULT_ADMIN_ROLE, _student);
+        // Give to the university the permissions to write
         _grantRole(WRITER_ROLE, _university);
     }
 
@@ -145,11 +136,13 @@ contract Student is AccessControlEnumerable {
      * @return Array of academic results
      */
     function getResults() external view returns (Result[] memory) {
+        // Access control
         require(
             hasRole(READER_ROLE, _msgSender()) ||
                 hasRole(WRITER_ROLE, _msgSender()),
             AccessControlUnauthorizedAccount(_msgSender(), READER_ROLE)
         );
+
         return studentInfo.results;
     }
 
@@ -159,22 +152,20 @@ contract Student is AccessControlEnumerable {
      * @param _code Course unique identifier
      * @param _name Course full name
      * @param _degreeCourse Degree program name
-     * @param _integer Whole number part of ECTS credits
-     * @param _fraction Decimal part of ECTS credits
+     * @param _ects Course ECTS credits number
      */
     function enroll(
         string calldata _code,
         string calldata _name,
         string calldata _degreeCourse,
-        uint8 _integer,
-        uint8 _fraction
+        bytes7 _ects
     ) external onlyRole(WRITER_ROLE) {
         Result memory r = Result(
             _code,
             _name,
             _msgSender(),
             _degreeCourse,
-            Ects(_integer, _fraction),
+            _ects,
             "",
             0,
             ""
@@ -196,7 +187,9 @@ contract Student is AccessControlEnumerable {
         uint _date,
         string calldata _certificateHash
     ) external onlyRole(WRITER_ROLE) {
+        // Find the right course to evaluate
         for (uint i; i < studentInfo.results.length; ++i) {
+            // Different universities may use the same code. Check also the university's name
             if (
                 studentInfo.results[i].code.equal(_code) &&
                 studentInfo.results[i].university == _msgSender()
@@ -216,11 +209,13 @@ contract Student is AccessControlEnumerable {
      * @param _permissionType Permission type requested (READER_APPLICANT or WRITER_APPLICANT)
      */
     function askForPermission(bytes32 _permissionType) external {
+        // Check if the permission exists
         require(
             _permissionType == WRITER_APPLICANT ||
                 _permissionType == READER_APPLICANT,
             WrongRole()
         );
+
         _grantRole(_permissionType, _msgSender());
     }
 
@@ -234,10 +229,12 @@ contract Student is AccessControlEnumerable {
         bytes32 _permissionType,
         address _university
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        // Check if the permission exists
         require(
             _permissionType == WRITER_ROLE || _permissionType == READER_ROLE,
             WrongRole()
         );
+
         grantRole(_permissionType, _university);
         // Delete the university form the applicants if present
         if (hasRole(WRITER_APPLICANT, _university)) {
@@ -271,6 +268,7 @@ contract Student is AccessControlEnumerable {
     function getPermissions(
         bytes32 _permissionType
     ) external view onlyRole(DEFAULT_ADMIN_ROLE) returns (address[] memory) {
+        // Check if the permission exists
         require(
             _permissionType == WRITER_ROLE || _permissionType == READER_ROLE,
             WrongRole()
