@@ -253,19 +253,18 @@ contract Student is AccessControlEnumerable {
     /**
      * @notice Grants permission to a university
      * @dev Only callable by the student (DEFAULT_ADMIN_ROLE)
-     * @param _permissionType Permission type (0: write, 1: read)
+     * @param _permissionType Permission type (READER_ROLE or WRITER_ROLE)
      * @param _university Address of university to grant permission to
      */
     function grantPermission(
-        uint _permissionType,
+        bytes32 _permissionType,
         address _university
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_permissionType == 0 || _permissionType == 1, WrongRole());
-        if (_permissionType == 0) {
-            grantRole(WRITER_ROLE, _university);
-        } else {
-            grantRole(READER_ROLE, _university);
-        }
+        require(
+            _permissionType == WRITER_ROLE || _permissionType == READER_ROLE,
+            WrongRole()
+        );
+        grantRole(_permissionType, _university);
     }
 
     /**
@@ -286,17 +285,16 @@ contract Student is AccessControlEnumerable {
     /**
      * @notice Lists all universities with a specific permission type
      * @dev Only callable by the student (DEFAULT_ADMIN_ROLE)
-     * @param _permissionType Permission type to query (0: writers, 1: readers)
+     * @param _permissionType Permission type to query (READER_ROLE or WRITER_ROLE)
      * @return Array of university addresses with specified permission
      */
     function getPermissions(
-        uint _permissionType
+        bytes32 _permissionType
     ) external view onlyRole(DEFAULT_ADMIN_ROLE) returns (address[] memory) {
-        require(_permissionType == 0 || _permissionType == 1, WrongRole());
-        if (_permissionType == 0) {
-            return getRoleMembers(WRITER_ROLE);
-        } else {
-            return getRoleMembers(READER_ROLE);
-        }
+        require(
+            _permissionType == WRITER_ROLE || _permissionType == READER_ROLE,
+            WrongRole()
+        );
+        return getRoleMembers(_permissionType);
     }
 }
