@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../providers/AuthenticationProvider";
-import { JSX } from "react";
+import type { JSX } from "react";
 
 /**
  * PrivateRoute component restricts access to routes based on student authentication.

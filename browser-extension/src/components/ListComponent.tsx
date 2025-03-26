@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import type { JSX } from "react";
 import "../styles/ListComponentStyle.css";
 import { Col, Container, Row } from "react-bootstrap";
 import { formatCamelCaseString } from "../utils/utils";

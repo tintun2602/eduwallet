@@ -1,5 +1,6 @@
 import "../styles/FooterStyle.css";
-import { JSX, useState } from "react";
+import type { JSX } from "react";
+import { useState } from "react";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 

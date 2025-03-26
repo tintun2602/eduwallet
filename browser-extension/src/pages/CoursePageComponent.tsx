@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Result } from "../models/student";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import List from "../components/ListComponent";
-import { JSX } from "react";
+import type { JSX } from "react";
 import { useUniversities } from "../providers/UniversitiesProvider";
 import { formatDate } from "../utils/utils";
 import { NETWORK_CONFIG } from "../utils/contractsUtils";

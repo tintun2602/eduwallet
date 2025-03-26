@@ -1,4 +1,5 @@
-import { createContext, JSX, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
+import type { JSX } from "react";
 import { useAuth } from "./AuthenticationProvider";
 import UniversityModel from "../models/university";
 import { getUniversities } from "../API";

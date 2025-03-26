@@ -3,7 +3,9 @@ import "../styles/LoginPageStyle.css";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import { useAuth } from "../providers/AuthenticationProvider";
-import { JSX, useState } from "react";
+import { useState } from "react";
+import type { JSX } from "react";
+
 
 /**
  * LoginPage component renders a login form for users to authenticate with their ID and password.

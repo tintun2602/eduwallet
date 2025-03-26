@@ -1,7 +1,8 @@
 import "../styles/HomePageStyle.css";
 import { Col, Container, Image, Row } from "react-bootstrap";
 import { Result } from "../models/student";
-import { Dispatch, JSX, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import type { JSX } from "react";
 import University from "../models/university";
 import Footer from "../components/FooterComponent";
 import { useNavigate } from "react-router-dom";
@@ -155,7 +156,7 @@ function DegreeCourseResults(props: DegreeCourseResultsProps): JSX.Element {
 
     return (
         <>
-            {/* Courses results groupped by degree course */}
+            {/* Courses results grouped by degree course */}
             <Row className="my-2 degree-course">
                 <Col className="">
                     {course}

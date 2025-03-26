@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import { Routes, Route } from 'react-router-dom';
-import { JSX } from 'react';
+import type { JSX } from 'react';
 import LoginPage from './pages/LoginPageComponent';
 import Homepage from './pages/HomePageComponent';
 import StudentPage from './pages/StudentPageComponent';
@@ -10,6 +10,7 @@ import CoursePage from './pages/CoursePageComponent';
 import AuthenticationProvider from './providers/AuthenticationProvider';
 import PrivateRoute from './components/PrivateRoute';
 import UniversitiesProvider from './providers/UniversitiesProvider';
+import PermissionsPage from './pages/PermissionsPageComponents';
 
 
 /**

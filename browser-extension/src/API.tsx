@@ -1,5 +1,6 @@
-import { Credentials, StudentModel } from "./models/student";
-import UniversityModel from "./models/university";
+import type { Credentials } from "./models/student";
+import { StudentModel } from "./models/student";
+import type UniversityModel from "./models/university";
 import { getStudent, getStudentsRegister, getStudentWallet, getUniversity } from "./utils/contractsUtils";
 
 /**

@@ -4,7 +4,7 @@ import { Col, Container, Image, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import List from "../components/ListComponent";
 import { useAuth } from "../providers/AuthenticationProvider";
-import { JSX } from "react";
+import type { JSX } from "react";
 
 /**
  * UserPage component displays the student's profile information. It renders the student's profile information in a structured layout.
