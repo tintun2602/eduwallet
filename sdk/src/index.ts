@@ -4,6 +4,7 @@ import { computeDate, createStudentWallet, generateStudent, getStudentContract, 
 import { provider } from "./conf";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc.js';
+import type { Student as StudentContract } from '@typechain/contracts/Student';
 
 export type { StudentCredentials, StudentData, CourseInfo, Evaluation, Student };
 export { getStudentsRegister };
@@ -14,14 +15,17 @@ export async function registerStudent(universityWallet: Wallet, student: Student
     const studentsRegister = getStudentsRegister();
     const studentEthWallet = createStudentWallet();
     const connectedUniversity = universityWallet.connect(provider);
-    
+    const basinInfo: StudentContract.StudentBasicInfoStruct = {
+        name: student.name,
+        surname: student.surname,
+        birthDate: dayjs.utc(student.birthDate).unix(),
+        birthPlace: student.birthPlace,
+        country: student.country
+    }
+
     const registerTx = await studentsRegister.connect(connectedUniversity).registerStudent(
         studentEthWallet.ethWallet?.address,
-        student.name,
-        student.surname,
-        dayjs.utc(student.birthDate).unix(),
-        student.birthPlace,
-        student.country
+        basinInfo
     );
     await registerTx.wait();
 
@@ -38,13 +42,11 @@ export async function registerStudent(universityWallet: Wallet, student: Student
 export async function enrollStudent(universityWallet: Wallet, studentWalletAddress: string, courses: CourseInfo[]): Promise<void> {
     const studentWallet = getStudentContract(studentWalletAddress);
     for (const course of courses) {
-        const [integerPart, fractionalPart = '0'] = course.ects.toString().split('.');
         await studentWallet.connect(universityWallet).enroll(
             course.code,
             course.name,
             course.degreeCourse,
-            parseInt(integerPart),
-            parseInt(fractionalPart),
+            BigInt(course.ects * 100)
         );
     }
 }

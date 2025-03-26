@@ -38,7 +38,7 @@ contract Student is AccessControlEnumerable {
      * @param name Course name
      * @param university Address of the university that created the record
      * @param degreeCourse Name of the degree program
-     * @param ects ECTS credits for the course
+     * @param ects ECTS credits for the course (original value multiplied by 100 to work with integer numbers)
      * @param grade Final grade (empty if not evaluated)
      * @param date Date when the grade was assigned
      * @param certificateHash CID of the IPFS file representing the certificate
@@ -48,7 +48,7 @@ contract Student is AccessControlEnumerable {
         string name;
         address university;
         string degreeCourse;
-        bytes7 ects;
+        uint16 ects;
         string grade;
         uint date;
         string certificateHash;
@@ -152,13 +152,13 @@ contract Student is AccessControlEnumerable {
      * @param _code Course unique identifier
      * @param _name Course full name
      * @param _degreeCourse Degree program name
-     * @param _ects Course ECTS credits number
+     * @param _ects Course ECTS credits number (original value multiplied by 100 to work with integer numbers)
      */
     function enroll(
         string calldata _code,
         string calldata _name,
         string calldata _degreeCourse,
-        bytes7 _ects
+        uint16 _ects
     ) external onlyRole(WRITER_ROLE) {
         Result memory r = Result(
             _code,

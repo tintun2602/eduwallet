@@ -116,7 +116,7 @@ function generateResult(result: Student.ResultStructOutput, university: Universi
         code: result.code,
         university,
         degreeCourse: result.degreeCourse,
-        ects: parseFloat(`${result.ects[0]}.${result.ects[1]}`),
+        ects: Number(result.ects)/100,
         grade: result.grade || undefined,
         evaluationDate: result.date ? computeDate(result.date) : undefined,
         certificate: result.certificateHash ? `${ipfsConfig.gatewayUrl}${result.certificateHash}` : undefined,
