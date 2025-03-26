@@ -239,6 +239,12 @@ contract Student is AccessControlEnumerable {
             WrongRole()
         );
         grantRole(_permissionType, _university);
+        // Delete the university form the applicants if present
+        if (hasRole(WRITER_APPLICANT, _university)) {
+            revokeRole(WRITER_APPLICANT, _university);
+        } else if (hasRole(READER_APPLICANT, _university)) {
+            revokeRole(READER_APPLICANT, _university);
+        }
     }
 
     /**
