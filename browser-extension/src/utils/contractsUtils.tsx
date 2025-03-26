@@ -53,20 +53,16 @@ export async function getStudent(student: StudentModel): Promise<void> {
 
         // Fetch student info
         const {
-            name,
-            surname,
-            birthDate,
-            birthPlace,
-            country,
+            basicInfo,
             results
         } = await contract.connect(student.wallet).getStudentInfo();
 
         // Update student model
-        student.name = name;
-        student.surname = surname;
-        student.birthPlace = birthPlace;
-        student.birthDate = new Date(Number(birthDate)).toLocaleDateString("en-US");
-        student.country = country;
+        student.name = basicInfo.name;
+        student.surname = basicInfo.surname;
+        student.birthPlace = basicInfo.birthPlace;
+        student.birthDate = new Date(Number(basicInfo.birthDate)).toLocaleDateString("en-US");
+        student.country = basicInfo.country;
 
         // Update academic results
         student.updateResults(results);
