@@ -17,8 +17,8 @@ error WrongRole();
  * @notice Manages a student's academic records and university permissions
  * @dev Implements role-based access control for universities to manage student records
  *
- * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors.
- * ? Is it better to save data as immutable and then return the struct when getters for student's info are called?
+ * TODO: Add input validation. Add events if necessary. Change require with if statements, revert and custom errors. Basic info can be a field of StudentInfo. See library for the validation part.
+ * ? Enroll and Evaluate with an array of struct as parameter?
  * ? Save ECTS in gwei, fetch them and then convert?
  * ? Why students have a different function than universities to fetch information?
  */
@@ -26,8 +26,12 @@ contract Student is AccessControlEnumerable {
     using Strings for string;
 
     // Role definitions for access control
-    bytes32 private constant READER_ROLE = keccak256("READER_ROLE");
-    bytes32 private constant WRITER_ROLE = keccak256("WRITER_ROLE");
+    bytes32 public constant READER_ROLE = keccak256("READER_ROLE");
+    bytes32 public constant WRITER_ROLE = keccak256("WRITER_ROLE");
+
+    // Role definition for access request control
+    bytes32 public constant READER_APPLICANT = keccak256("READER_APPLICANT");
+    bytes32 public constant WRITER_APPLICANT = keccak256("WRITER_APPLICANT");
 
     /**
      * @dev Represents ECTS credits with integer and fractional parts
@@ -230,6 +234,20 @@ contract Student is AccessControlEnumerable {
             }
         }
         revert NotExistingRecord();
+    }
+
+    /**
+     * @notice Allows a university to request permission to access student data
+     * @dev University addresses will be added to READER_APPLICANT or WRITER_APPLICANT roles
+     * @param _permissionType Permission type requested (READER_APPLICANT or WRITER_APPLICANT)
+     */
+    function askForPermission(bytes32 _permissionType) external {
+        require(
+            _permissionType == WRITER_APPLICANT ||
+                _permissionType == READER_APPLICANT,
+            WrongRole()
+        );
+        _grantRole(_permissionType, _msgSender());
     }
 
     /**

@@ -83,7 +83,8 @@ The project aims to revolutionize university credit management by storing studen
 
 ## Future
 
-- Integration of PDF documents and other file formats within the student's wallet
 - Enhanced privacy mechanisms for blockchain data protection
 - Implementation of Gas Station Network (GSN) or alternative methods to eliminate user gas fees
 - Authentication system upgrades for improved security
+- The Graph to have a record of all the events in Student contracts. Better way to have access to the wallets permissions.
+- Allow students to give permissions without a request.
