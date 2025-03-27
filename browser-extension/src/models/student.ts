@@ -98,7 +98,7 @@ export class StudentModel {
             degreeCourse: r.degreeCourse,
             grade: r.grade === "" ? "N/D" : r.grade,
             date: r.date,
-            ects: parseFloat(`${r.ects[0]}.${r.ects[1]}`),
+            ects: Number(r.ects)/100,
             certificateCid: r.certificateHash,
         }));
     }
