@@ -52,7 +52,7 @@ export async function getStudent(student: StudentModel): Promise<void> {
         student.name = basicInfo.name;
         student.surname = basicInfo.surname;
         student.birthPlace = basicInfo.birthPlace;
-        student.birthDate = new Date(Number(basicInfo.birthDate)).toLocaleDateString("en-US");
+        student.birthDate = new Date(Number(basicInfo.birthDate) * 1000).toLocaleDateString();
         student.country = basicInfo.country;
 
         // Update academic results
