@@ -1,8 +1,7 @@
 import "../styles/FooterStyle.css";
 import type { JSX } from "react";
-import { useState } from "react";
 import { Col, Container, Image, Row } from "react-bootstrap";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 
 /**
  * Footer component renders the footer navigation menu.
@@ -10,10 +9,11 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
  * @returns {JSX.Element} The rendered footer component.
  */
 export default function Footer(): JSX.Element {
-    const [menuOption, setMenuOption] = useState<string>("wallet");
+    const location = useLocation();
+    const menuOption = location.pathname.substring(1);
+
     const navigate: NavigateFunction = useNavigate();
     const changeMenu = (option: string) => {
-        setMenuOption(option);
         navigate("/" + option);
     }
 
