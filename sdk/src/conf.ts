@@ -73,13 +73,13 @@ export const ipfsConfig: IpfsStorageConfig = {
 }
 
 /**
- * Ethereum JSON-RPC provider instance
- * Pre-configured with the URL from blockchain configuration
+ * Ethereum JSON-RPC provider instance.
+ * Pre-configured with the URL from blockchain configuration.
  */
 export const provider = new ethers.JsonRpcProvider(blockchainConfig.url);
 
 /**
- * S3 client for IPFS storage
- * Pre-configured with the settings from IPFS configuration
+ * S3 client for IPFS storage.
+ * Pre-configured with the settings from IPFS configuration.
  */
 export const s3Client = new S3Client(ipfsConfig.s3Config);
