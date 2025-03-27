@@ -1,7 +1,7 @@
 /**
  * Derives a 256-bit private key from a password using PBKDF2.
  * @param {string} password - The student's password (random string).
- * @param {number} studentId - The student's unique ID number.
+ * @param {string} studentId - The student's unique ID string.
  * @returns {string} A private key formatted as a hex string with '0x' prefix.
  */
 export async function derivePrivateKey(password: string, studentId: string): Promise<string> {
