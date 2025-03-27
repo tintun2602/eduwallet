@@ -7,7 +7,7 @@ import { Student } from '../../../typechain-types/contracts/Student';
  */
 export class StudentModel {
     // Immutable properties
-    public readonly id: number;
+    public readonly id: string;
     public readonly wallet: Wallet;
     public readonly contractAddress: string;
 
@@ -25,7 +25,7 @@ export class StudentModel {
      * @param wallet - The student's Ethereum wallet
      * @param contractAddress - The student's smart contract address
      */
-    constructor(id: number, wallet: Wallet, contractAddress: string) {
+    constructor(id: string, wallet: Wallet, contractAddress: string) {
         this.id = id;
         this.wallet = wallet;
         this.contractAddress = contractAddress;
@@ -37,7 +37,7 @@ export class StudentModel {
      */
     static createEmpty(): StudentModel {
         const hdWallet = Wallet.createRandom();
-        return new this(-1, new Wallet(hdWallet.privateKey), '');
+        return new this("", new Wallet(hdWallet.privateKey), '');
     }
 
     /**
@@ -139,6 +139,6 @@ export interface Result {
  * @author Diego Da Giau
  */
 export interface Credentials {
-    id: number;
+    id: string;
     password: string;
 }

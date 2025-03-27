@@ -19,14 +19,10 @@ export default function LoginPage(): JSX.Element {
     const login = useAuth().login;
     const [id, setId] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-            event.preventDefault();
-        }
-    };
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        login({ id: parseInt(id), password: password });
+        login({ id: id, password: password });
     };
 
     return (
@@ -51,7 +47,7 @@ export default function LoginPage(): JSX.Element {
                 <Form className="w-100" onSubmit={handleSubmit}>
                     <Form.Group controlId="exampleForm.ControlInput1" className="floating-label">
                         <Form.Label className="form-input-label">ID</Form.Label>
-                        <Form.Control className="form-input no-arrows" type="number" inputMode="numeric" pattern="[1-9][0-9]*" value={id} required onKeyDown={handleKeyDown} onChange={ev => setId(ev.target.value)} />
+                        <Form.Control className="form-input" type="text" inputMode="numeric" value={id} required onChange={ev => setId(ev.target.value)} />
                     </Form.Group>
                     <Form.Group controlId="exampleForm.ControlTextarea1" className="floating-label">
                         <Form.Label className="form-input-label">Password</Form.Label>

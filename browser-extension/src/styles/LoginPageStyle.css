@@ -3,12 +3,6 @@
   font-weight: 900;
 }
 
-.no-arrows::-webkit-outer-spin-button,
-.no-arrows::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
 .floating-label {
   position: relative;
   width: 100%;

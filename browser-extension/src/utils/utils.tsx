@@ -4,9 +4,9 @@
  * @param {number} studentId - The student's unique ID number.
  * @returns {string} A private key formatted as a hex string with '0x' prefix.
  */
-export async function derivePrivateKey(password: string, studentId: number): Promise<string> {
+export async function derivePrivateKey(password: string, studentId: string): Promise<string> {
     const encoder = new TextEncoder();
-    const salt = encoder.encode(`student-${studentId}`);
+    const salt = encoder.encode(`${studentId}`);
     const iterations = 100000;
     const keyLength = 256; // bits
 

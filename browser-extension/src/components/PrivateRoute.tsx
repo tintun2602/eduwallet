@@ -13,7 +13,7 @@ export default function PrivateRoute(): JSX.Element {
     const student = useAuth();
 
     // Check if the student is authenticated
-    if (student.student.id === -1) {
+    if (student.student.id === "") {
         // If not authenticated, redirect to the login page
         return (<Navigate to="/login" />);
     }
