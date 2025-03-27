@@ -6,19 +6,10 @@ import { Credentials, StudentModel } from "../models/student"
 import { StudentsRegister } from '../../../typechain-types/contracts/StudentsRegister';
 import UniversityModel from '../models/university';
 import { University__factory } from "../../../typechain-types/factories/contracts/University__factory"
-
-
-/**
- * Network configuration
- */
-export const NETWORK_CONFIG = {
-    url: "http://127.0.0.1:8545",
-    contractAddress: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    ipfsGateway: "https://ipfs.io/ipfs/",
-} as const;
+import { blockchainConfig } from './conf';
 
 // Initialize provider once for reuse
-const provider = new ethers.JsonRpcProvider(NETWORK_CONFIG.url);
+const provider = new ethers.JsonRpcProvider(blockchainConfig.url);
 
 /**
  * Retrieves the StudentsRegister contract instance.
@@ -26,7 +17,7 @@ const provider = new ethers.JsonRpcProvider(NETWORK_CONFIG.url);
  * @returns {StudentsRegister} Connected contract instance
  */
 export function getStudentsRegister(): StudentsRegister {
-    return StudentsRegister__factory.connect(NETWORK_CONFIG.contractAddress, provider);
+    return StudentsRegister__factory.connect(blockchainConfig.registerAddress, provider);
 }
 
 /**

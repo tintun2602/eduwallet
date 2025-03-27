@@ -8,7 +8,7 @@ import List from "../components/ListComponent";
 import type { JSX } from "react";
 import { useUniversities } from "../providers/UniversitiesProvider";
 import { formatDate } from "../utils/utils";
-import { NETWORK_CONFIG } from "../utils/contractsUtils";
+import { ipfsConfig } from "../utils/conf";
 
 /**
  * CoursePage component renders the detailed page for a specific course.
@@ -96,7 +96,7 @@ function Certificate(props: CertificateProps): JSX.Element {
                 </Row>
                 <Row>
                     <Col className="text-16 list-content">
-                        <a className="" href={NETWORK_CONFIG.ipfsGateway + certificateCid} target="_blank">Click to open the certificate</a>
+                        <a className="" href={ipfsConfig.gatewayUrl + certificateCid} target="_blank">Click to open the certificate</a>
                     </Col>
                 </Row>
             </Container>
