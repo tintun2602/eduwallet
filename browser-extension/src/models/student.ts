@@ -110,6 +110,7 @@ export class StudentModel {
     toObject(): Object {
         return {
             id: this.id,
+            walletAddress: this.contractAddress,
             name: this.name,
             surname: this.surname,
             birthDate: this.birthDate,
