@@ -8,6 +8,7 @@ import Footer from "../components/FooterComponent";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthenticationProvider";
 import { useUniversities } from "../providers/UniversitiesProvider";
+import Header from "../components/HeaderComponent";
 
 /**
  * Homepage component renders the main page of the application.
@@ -30,9 +31,6 @@ export default function Homepage(): JSX.Element {
     // Track which university's results are being displayed
     const [activeUniversity, setActiveUniversity] = useState<string>("");
 
-    // Navigation utility
-    const navigate = useNavigate();
-
     // Fetch universities data on component mount
     useEffect(() => {
         fetchUniversities();
@@ -48,16 +46,8 @@ export default function Homepage(): JSX.Element {
     return (
         <>
             {/* Header */}
-            <Container>
-                <Row className="mb-3">
-                    <Col>
-                        <strong className="text-24">Wallet</strong>
-                    </Col>
-                    <Col className="text-end">
-                        <Image src="images/icons/student.svg" alt="Student icon" className="cursor-pointer" onClick={() => navigate("/student")} />
-                    </Col>
-                </Row>
-            </Container>
+            <Header title="Wallet" />
+
             {/* Student's general data */}
             <Container>
                 <Row className="mb-3">

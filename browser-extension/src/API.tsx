@@ -9,16 +9,14 @@ import { getStudent, getStudentsRegister, getStudentWallet, getUniversity } from
  * @param {Credentials} credentials - The student's login credentials (ID and password)
  * @returns {Promise<StudentModel>} A promise that resolves to the authenticated student's data
  * @throws {Error} If authentication fails or student data cannot be retrieved
- * 
- * TODO: change from Promise.all to async call without await
  */
 export async function logIn(credentials: Credentials): Promise<StudentModel> {
     try {
         // Get contract instance and create student wallet
-        const [studentsRegister, studentWallet] = await Promise.all([
-            getStudentsRegister(),
-            getStudentWallet(credentials)
-        ]);
+        const studentWalletPromise = getStudentWallet(credentials);
+        const studentsRegister = getStudentsRegister();
+
+        const studentWallet = await studentWalletPromise;
 
         // Get student's smart contract address
         const contractAddress = await studentsRegister
@@ -42,16 +40,12 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
  * @param {StudentModel} student - The student whose universities need to be retrieved
  * @returns {Promise<UniversityModel[]>} Array of university models with their details
  * @throws {Error} If universities cannot be retrieved or connection fails
- * 
- * TODO: change from Promise.all to async call without await
  */
 export async function getUniversities(student: StudentModel): Promise<UniversityModel[]> {
     try {
-        // Get contract instance and university addresses in parallel
-        const [studentsRegister, universitiesAddresses] = await Promise.all([
-            getStudentsRegister(),
-            Array.from(student.getResultsUniversities())
-        ]);
+        // Get contract instance and university addresses
+        const studentsRegister = getStudentsRegister();
+        const universitiesAddresses = Array.from(student.getResultsUniversities());
 
         // Get wallet addresses for all universities
         const universitiesWallets = await studentsRegister
