@@ -11,6 +11,7 @@ import AuthenticationProvider from './providers/AuthenticationProvider';
 import PrivateRoute from './components/PrivateRoute';
 import UniversitiesProvider from './providers/UniversitiesProvider';
 import PermissionsPage from './pages/PermissionsPageComponents';
+import Layout from './components/LayoutComponent';
 
 
 /**
@@ -31,9 +32,11 @@ function App(): JSX.Element {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route element={<PrivateRoute />}>
-            <Route path="/wallet" element={<Homepage />} />
-            <Route path='/student' element={<StudentPage />} />
-            <Route path='/wallet/:code' element={<CoursePage />} />
+            <Route element={<Layout />}>
+              <Route path="/wallet" element={<Homepage />} />
+              <Route path='/student' element={<StudentPage />} />
+              <Route path='/wallet/:code' element={<CoursePage />} />
+            </Route>
           </Route>
         </Routes>
       </UniversitiesProvider>

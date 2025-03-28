@@ -4,7 +4,6 @@ import { Result } from "../models/student";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import type { JSX } from "react";
 import University from "../models/university";
-import Footer from "../components/FooterComponent";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthenticationProvider";
 import { useUniversities } from "../providers/UniversitiesProvider";
@@ -75,7 +74,6 @@ export default function Homepage(): JSX.Element {
                     <UniversityResults results={student.getResultsByUniversityGroupedByCourseDegree(activeUniversity)} />
                 </Container>
             </Container>
-            <Footer />
         </>
     );
 }
