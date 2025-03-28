@@ -2,6 +2,7 @@ import type { JSX } from "react";
 import "../styles/ListComponentStyle.css";
 import { Col, Container, Row } from "react-bootstrap";
 import { formatCamelCaseString } from "../utils/utils";
+import React from "react";
 
 /**
  * List component renders a list of key-value pairs from an object.
@@ -11,33 +12,27 @@ import { formatCamelCaseString } from "../utils/utils";
  */
 export default function List(props: ListProps): JSX.Element {
     const obj = props.object;
-    const list = [];
     const keys = Object.keys(obj);
-
-    // Iterate over the keys of the object and create list items
-    for (let i = 0; i < keys.length; ++i) {
-        list.push(
-            <>
-                <Container key={i} className="list">
-                    <Row>
-                        <Col className="purple-text text-13 list-title">
-                            {formatCamelCaseString(keys[i])}
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col className="text-16 list-content">
-                            {obj[keys[i]]}
-                        </Col>
-                    </Row>
-                </Container>
-                {i === (keys.length - 1) ? <></> : <hr className="my-2" />}
-            </>
-        );
-    }
 
     return (
         <>
-            {list}
+            {keys.map((key, index) => (
+                <React.Fragment key={`item-${index}`}>
+                    <Container className="list">
+                        <Row>
+                            <Col className="purple-text text-13 list-title">
+                                {formatCamelCaseString(key)}
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className="text-16 list-content">
+                                {obj[key]}
+                            </Col>
+                        </Row>
+                    </Container>
+                    {index < keys.length - 1 && <hr className="my-2" />}
+                </React.Fragment>
+            ))}
         </>
     );
 }
