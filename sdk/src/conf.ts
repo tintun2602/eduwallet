@@ -1,6 +1,6 @@
 import { S3Client, S3ClientConfig } from "@aws-sdk/client-s3";
 import * as dotenv from 'dotenv'
-import { ethers } from "ethers";
+import { JsonRpcProvider } from "ethers";
 
 /**
  * Load environment variables from .env file.
@@ -76,7 +76,7 @@ export const ipfsConfig: IpfsStorageConfig = {
  * Ethereum JSON-RPC provider instance.
  * Pre-configured with the URL from blockchain configuration.
  */
-export const provider = new ethers.JsonRpcProvider(blockchainConfig.url);
+export const provider = new JsonRpcProvider(blockchainConfig.url);
 
 /**
  * S3 client for IPFS storage.
