@@ -1,7 +1,9 @@
+import { ContractTransactionResponse } from "ethers";
 import type { Credentials } from "./models/student";
 import { StudentModel } from "./models/student";
 import type UniversityModel from "./models/university";
-import { getStudent, getStudentsRegister, getStudentWallet, getUniversity } from "./utils/contractsUtils";
+import { getRawPermissions, getStudent, getStudentsRegister, getStudentWallet, getUniversity, grantPermission, revokePermission } from "./utils/contractsUtils";
+import { Permission } from "./models/permissions";
 
 /**
  * Authenticates a student and retrieves their information.
@@ -38,14 +40,18 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
  * Retrieves all universities associated with a student's academic results.
  * @author Diego Da Giau
  * @param {StudentModel} student - The student whose universities need to be retrieved
+ * @param {string[]} universitiesAddresses - Ethereum addresses of universities to fetch
  * @returns {Promise<UniversityModel[]>} Array of university models with their details
  * @throws {Error} If universities cannot be retrieved or connection fails
  */
-export async function getUniversities(student: StudentModel): Promise<UniversityModel[]> {
+export async function getUniversities(student: StudentModel, universitiesAddresses: string[]): Promise<UniversityModel[]> {
+    if (universitiesAddresses.length === 0) {
+        return [];
+    }
+
     try {
         // Get contract instance and university addresses
         const studentsRegister = getStudentsRegister();
-        const universitiesAddresses = Array.from(student.getResultsUniversities());
 
         // Get wallet addresses for all universities
         const universitiesWallets = await studentsRegister
@@ -68,4 +74,30 @@ export async function getUniversities(student: StudentModel): Promise<University
         console.error('Universities retrieval failed:', error);
         throw new Error('Failed to retrieve universities. Please try again later.');
     }
+}
+
+/**
+ * Retrieves all permissions for a student from the blockchain.
+ * @author Diego Da Giau
+ * @param {StudentModel} student - The authenticated student model
+ * @returns {Promise<Permission[]>} Array of all permissions (both requests and granted)
+ */
+export async function getPermissions(student: StudentModel): Promise<Permission[]> {
+    return getRawPermissions(student);
+}
+
+/**
+ * Performs the appropriate action on a permission based on its type.
+ * For permission requests, grants the permission.
+ * For existing permissions, revokes the permission.
+ * @author Diego Da Giau
+ * @param {StudentModel} student - The authenticated student model
+ * @param {Permission} permission - The permission to process
+ * @returns {Promise<ContractTransactionResponse>} Transaction response from the blockchain
+ */
+export async function performAction(student: StudentModel, permission: Permission): Promise<ContractTransactionResponse> {
+    if (permission.request) {
+        return grantPermission(student, permission);
+    }
+    return revokePermission(student, permission.university);
 }

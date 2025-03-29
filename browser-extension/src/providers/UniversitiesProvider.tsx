@@ -4,14 +4,24 @@ import { useAuth } from "./AuthenticationProvider";
 import UniversityModel from "../models/university";
 import { getUniversities } from "../API";
 
+/**
+ * Interface defining the shape of the UniversitiesContext.
+ * Provides universities data and methods to update it.
+ */
 interface UniversitiesProviderProps {
+    /** Array of university models available in the system */
     universities: UniversityModel[];
-    fetchUniversities(): void;
+    /** Function to update the universities list with new addresses */
+    updateUniversities(universitiesAddresses: string[]): Promise<void>;
 }
 
+/**
+ * Context that provides universities data throughout the application.
+ * Default values are used before the provider is initialized.
+ */
 const UniversitiesContext = createContext<UniversitiesProviderProps>({
     universities: [],
-    fetchUniversities: () => { }
+    updateUniversities: async () => Promise.resolve()
 });
 
 /**
@@ -19,6 +29,7 @@ const UniversitiesContext = createContext<UniversitiesProviderProps>({
  * Manages the state of universities and provides methods to update it.
  * @param {Object} props - Component properties
  * @param {React.ReactNode} props.children - Child components to be wrapped
+ * @returns {JSX.Element} Provider component with universities context
  */
 export default function UniversitiesProvider({ children }: { children: React.ReactNode }): JSX.Element {
     // Get authenticated student from context
@@ -30,15 +41,35 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
     /**
      * Fetches universities data and updates state.
      * Uses the authenticated student to retrieve relevant universities.
+     * @returns {Promise<void>} A promise that resolves when universities are fetched
      */
-    const fetchUniversities = async () => {
+    const fetchUniversities = async (): Promise<void> => {
         try {
-            const universitiesTmp = await getUniversities(student);
+            const universitiesAddresses = Array.from(student.getResultsUniversities());
+            const universitiesTmp = await getUniversities(student, universitiesAddresses);
             setUniversities(universitiesTmp);
         } catch (error) {
             setUniversities([]);
         }
     };
+
+    /**
+     * Updates the universities list by adding new universities from provided addresses.
+     * Filters out addresses that are already in the universities list.
+     * @param {string[]} universitiesAddresses - Array of university addresses to add
+     * @returns {Promise<void>} A promise that resolves when new universities are added
+     */
+    const updateUniversities = async (universitiesAddresses: string[]): Promise<void> => {
+        const universitiesSet = new Set(universities.map(u => u.universityAddress));
+        const filteredAddresses = universitiesAddresses.filter(a => !universitiesSet.has(a));
+        const universitiesTmp = await getUniversities(student, filteredAddresses);
+        setUniversities(old => [...old, ...universitiesTmp]);
+    };
+
+    /**
+     * Effect hook to load universities when the student context changes.
+     * Fetches university data on component mount and when student changes.
+     */
     useEffect(() => {
         const loadUniversities = async () => {
             fetchUniversities()
@@ -48,12 +79,17 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
 
     // Provide universities data and fetch method to children
     return (
-        <UniversitiesContext.Provider value={{ universities, fetchUniversities }}>
+        <UniversitiesContext.Provider value={{ universities, updateUniversities }}>
             {children}
         </UniversitiesContext.Provider>
     );
 }
 
+/**
+ * Custom hook to access the universities context.
+ * Provides a convenient way to consume universities data and methods.
+ * @returns {UniversitiesProviderProps} The universities context value
+ */
 export const useUniversities = () => {
     return useContext(UniversitiesContext);
 };

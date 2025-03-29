@@ -12,6 +12,7 @@ import PrivateRoute from './components/PrivateRoute';
 import UniversitiesProvider from './providers/UniversitiesProvider';
 import PermissionsPage from './pages/PermissionsPageComponents';
 import Layout from './components/LayoutComponent';
+import PermissionsProvider from './providers/PermissionsProvider';
 
 
 /**
@@ -24,21 +25,25 @@ import Layout from './components/LayoutComponent';
  * - `/wallet` for the homepage, which displays the list of universities
  * - `/student` for the student page
  * - `/wallet/:code` for the course page
+ * - `/permissions` for the permissions page
  */
 function App(): JSX.Element {
   return (
     <AuthenticationProvider>
       <UniversitiesProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route element={<PrivateRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/wallet" element={<Homepage />} />
-              <Route path='/student' element={<StudentPage />} />
-              <Route path='/wallet/:code' element={<CoursePage />} />
+        <PermissionsProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<PrivateRoute />}>
+              <Route element={<Layout />}>
+                <Route path="/wallet" element={<Homepage />} />
+                <Route path='/student' element={<StudentPage />} />
+                <Route path='/wallet/:code' element={<CoursePage />} />
+                <Route path='/permissions' element={<PermissionsPage />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </PermissionsProvider>
       </UniversitiesProvider>
     </AuthenticationProvider>
   );

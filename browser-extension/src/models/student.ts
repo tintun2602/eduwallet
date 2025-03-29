@@ -125,13 +125,21 @@ export class StudentModel {
  * @author Diego Da Giau
  */
 export interface Result {
+    /** Name of the academic course or exam */
     readonly name: string;
+    /** Unique code identifier for the course */
     readonly code: string;
+    /** Ethereum address of the university issuing the result */
     readonly university: string;
+    /** Name of the degree program this result belongs to */
     readonly degreeCourse: string;
+    /** Academic grade received (or "N/D" if not available) */
     readonly grade: string;
+    /** Timestamp of when the result was recorded */
     readonly date: bigint;
+    /** Number of European Credit Transfer System credits */
     readonly ects: number;
+    /** Content identifier for the certificate in IPFS */
     readonly certificateCid: string;
 }
 
@@ -140,6 +148,8 @@ export interface Result {
  * @author Diego Da Giau
  */
 export interface Credentials {
+    /** Student's unique identifier */
     id: string;
+    /** Student's authentication password */
     password: string;
 }

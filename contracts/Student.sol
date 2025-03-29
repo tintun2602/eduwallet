@@ -22,12 +22,12 @@ error WrongRole();
  */
 contract Student is AccessControlEnumerable {
     // Role definitions for access control
-    bytes32 public constant READER_ROLE = keccak256("READER_ROLE");
-    bytes32 public constant WRITER_ROLE = keccak256("WRITER_ROLE");
+    bytes32 private constant READER_ROLE = keccak256("READER_ROLE");
+    bytes32 private constant WRITER_ROLE = keccak256("WRITER_ROLE");
 
-    // Role definition for access request control
-    bytes32 public constant READER_APPLICANT = keccak256("READER_APPLICANT");
-    bytes32 public constant WRITER_APPLICANT = keccak256("WRITER_APPLICANT");
+    // Role definition for access requests control
+    bytes32 private constant READER_APPLICANT = keccak256("READER_APPLICANT");
+    bytes32 private constant WRITER_APPLICANT = keccak256("WRITER_APPLICANT");
 
     /**
      * @dev Represents an academic result/course enrollment
@@ -267,7 +267,7 @@ contract Student is AccessControlEnumerable {
     ) external view onlyRole(DEFAULT_ADMIN_ROLE) returns (address[] memory) {
         // Check if the permission exists
         require(
-            _permissionType == WRITER_ROLE || _permissionType == READER_ROLE,
+            _permissionType == WRITER_ROLE || _permissionType == READER_ROLE || _permissionType == READER_APPLICANT || _permissionType == WRITER_APPLICANT,
             WrongRole()
         );
         return getRoleMembers(_permissionType);
