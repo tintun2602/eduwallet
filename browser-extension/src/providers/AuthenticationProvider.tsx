@@ -6,10 +6,13 @@ import { useNavigate } from "react-router-dom";
 
 interface AuthenticationProviderProps {
     student: StudentModel,
-    login(credentials: Credentials): void
+    login(credentials: Credentials): Promise<void>
 }
 
-const AuthContext = createContext<AuthenticationProviderProps>({ student: StudentModel.createEmpty(), login: () => { } });
+const AuthContext = createContext<AuthenticationProviderProps>({
+    student: StudentModel.createEmpty(),
+    login: () => Promise.resolve()
+});
 
 /**
  * AuthenticationProvider component that provides authentication context to its children.

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { JSX } from "react";
 import { useAuth } from "./AuthenticationProvider";
 import UniversityModel from "../models/university";
@@ -39,6 +39,12 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
             setUniversities([]);
         }
     };
+    useEffect(() => {
+        const loadUniversities = async () => {
+            fetchUniversities()
+        };
+        loadUniversities();
+    }, [student]);
 
     // Provide universities data and fetch method to children
     return (

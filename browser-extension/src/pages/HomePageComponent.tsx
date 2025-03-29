@@ -20,7 +20,6 @@ export default function Homepage(): JSX.Element {
 
     // Get universities data and fetch function from context
     const universities = useUniversities().universities;
-    const fetchUniversities = useUniversities().fetchUniversities;
 
     // Calculate total credits from completed courses (with grades)
     const creditNumber = student.getResults()
@@ -29,11 +28,6 @@ export default function Homepage(): JSX.Element {
 
     // Track which university's results are being displayed
     const [activeUniversity, setActiveUniversity] = useState<string>("");
-
-    // Fetch universities data on component mount
-    useEffect(() => {
-        fetchUniversities();
-    }, []);
 
     // Set first university as active when data is loaded
     useEffect(() => {
