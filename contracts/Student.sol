@@ -3,7 +3,6 @@
 pragma solidity >=0.8.2;
 
 import {AccessControlEnumerable} from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Custom errors for better clarity
 error UnauthorizedReading();
@@ -22,8 +21,6 @@ error WrongRole();
  * ? Why students have a different function than universities to fetch information?
  */
 contract Student is AccessControlEnumerable {
-    using Strings for string;
-
     // Role definitions for access control
     bytes32 public constant READER_ROLE = keccak256("READER_ROLE");
     bytes32 public constant WRITER_ROLE = keccak256("WRITER_ROLE");
@@ -191,7 +188,7 @@ contract Student is AccessControlEnumerable {
         for (uint i; i < studentInfo.results.length; ++i) {
             // Different universities may use the same code. Check also the university's name
             if (
-                studentInfo.results[i].code.equal(_code) &&
+                keccak256(bytes(studentInfo.results[i].code)) == keccak256(bytes(_code)) &&
                 studentInfo.results[i].university == _msgSender()
             ) {
                 studentInfo.results[i].grade = _grade;
