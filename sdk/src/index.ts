@@ -1,4 +1,4 @@
-import type { Wallet } from "ethers";
+import type { ContractTransactionResponse, Wallet } from "ethers";
 import type { CourseInfo, Evaluation, Student, StudentCredentials, StudentData } from "./types";
 import { computeDate, createStudentWallet, generateStudent, getStudentContract, getStudentsRegister, publishCertificate } from "./utils";
 import { provider } from "./conf";
@@ -64,53 +64,103 @@ export async function registerStudent(universityWallet: Wallet, student: Student
 /**
  * Enrolls a student in one or more academic courses.
  * Adds course records to the student's academic wallet.
+ * Both transaction submission and confirmation are processed in parallel for maximum efficiency.
  * @author Diego Da Giau
  * @param {Wallet} universityWallet - The university wallet with enrollment permissions
  * @param {string} studentWalletAddress - The student's academic wallet address
  * @param {CourseInfo[]} courses - Array of courses to enroll the student in
- * @returns {Promise<void>} Promise that resolves when enrollment is complete
+ * @returns {Promise<{course: CourseInfo, error: Error}[]>} Array of failed enrollments with their errors. Returns an empty array if all enrollments succeeded.
  */
-export async function enrollStudent(universityWallet: Wallet, studentWalletAddress: string, courses: CourseInfo[]): Promise<void> {
+export async function enrollStudent(universityWallet: Wallet, studentWalletAddress: string, courses: CourseInfo[]): Promise<{ course: CourseInfo, error: Error }[]> {
     // Get student contract instance
     const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Enroll student in each provided course
+    // Array to track enrollment transactions with their corresponding course data
+    const enrollmentPromises: { tx: Promise<ContractTransactionResponse>, course: CourseInfo }[] = [];
+
+    // Array to collect failed transactions
+    const failed: { course: CourseInfo, error: Error }[] = [];
+
+    // Submit all enrollment transactions in parallel
     for (const course of courses) {
-        await studentWallet.connect(universityWallet).enroll(
+        // Create transaction promise and track it with its course data
+        const tx = studentWallet.connect(universityWallet).enroll(
             course.code,
             course.name,
             course.degreeCourse,
             BigInt(course.ects * 100)
         );
+        enrollmentPromises.push({ tx, course });
     }
+
+    // Process all transactions in parallel - wait for submission and confirmation
+    const confirmationPromises = enrollmentPromises.map(t =>
+        t.tx.then(x =>
+            // Wait for blockchain confirmation
+            x.wait().catch(error =>
+                failed.push({ course: t.course, error }))
+        ).catch(error => {
+            failed.push({ course: t.course, error });
+        }))
+
+    // Wait for all transaction processes to complete
+    await Promise.allSettled(confirmationPromises);
+
+    // Return the list of failed enrollments (empty if all succeeded)
+    return failed;
 }
 
 /**
  * Records academic evaluations for a student's enrolled courses.
- * Publishes certificates to IPFS when provided.
+ * Publishes certificates to IPFS when provided and records evaluations on the blockchain.
+ * Both transaction submission and confirmation are processed in parallel for maximum efficiency.
  * @author Diego Da Giau
  * @param {Wallet} universityWallet - The university wallet with evaluation permissions
  * @param {string} studentWalletAddress - The student's academic wallet address
  * @param {Evaluation[]} evaluations - Array of academic evaluations to record
- * @returns {Promise<void>} Promise that resolves when evaluations are recorded
+ * @returns {Promise<{evaluation: Evaluation, error: Error}[]>} Array of failed evaluations with their errors. Returns an empty array if all evaluations were successfully recorded.
+ * 
+ * TODO: manage certificate publishing. Now it is sequential, better parallel.
  */
-export async function evaluateStudent(universityWallet: Wallet, studentWalletAddress: string, evaluations: Evaluation[]): Promise<void> {
+export async function evaluateStudent(universityWallet: Wallet, studentWalletAddress: string, evaluations: Evaluation[]): Promise<{ evaluation: Evaluation, error: Error }[]> {
     // Get student contract instance
     const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Process each evaluation
+    // Array to track evaluation transactions with their corresponding data
+    const evaluationPromises: { tx: Promise<ContractTransactionResponse>, evaluation: Evaluation }[] = [];
+
+    // Array to collect failed transactions
+    const failed: { evaluation: Evaluation, error: Error }[] = [];
+
     for (const evaluation of evaluations) {
         // Publish certificate to IPFS if provided
         const certificate = evaluation.certificate ? await publishCertificate(evaluation.certificate) : "";
 
         // Record evaluation on the blockchain
-        await studentWallet.connect(universityWallet).evaluate(
+        const tx = studentWallet.connect(universityWallet).evaluate(
             evaluation.code,
             evaluation.grade,
             dayjs.utc(evaluation.evaluationDate).unix(),
             certificate
         );
+        evaluationPromises.push({ tx, evaluation });
     }
+
+    // Process all transactions in parallel - wait for submission and confirmation
+    const confirmationPromises = evaluationPromises.map(t =>
+        t.tx.then(x =>
+            // Wait for blockchain confirmation
+            x.wait().catch(error =>
+                failed.push({ evaluation: t.evaluation, error }))
+        ).catch(error => {
+            failed.push({ evaluation: t.evaluation, error });
+        }))
+
+    // Wait for all transaction processes to complete
+    await Promise.allSettled(confirmationPromises);
+
+    // Return the list of failed enrollments (empty if all succeeded)
+    return failed;
 }
 
 /**

@@ -9,7 +9,6 @@
     - [Scenario 1](#scenario-1)
     - [Scenario 2](#scenario-2)
   - [GUI prototype](#gui-prototype)
-  - [Future](#future)
 
 ## Purpose
 
@@ -80,11 +79,3 @@ The project aims to revolutionize university credit management by storing studen
 ## GUI prototype
 
 [Figma GUI prototype](https://www.figma.com/design/aZrmR2thWfRGKQWDQbZE9C/EduWallet?node-id=125-95&t=gQwA5a4uDzRy8jBl-1)
-
-## Future
-
-- Enhanced privacy mechanisms for blockchain data protection
-- Implementation of Gas Station Network (GSN) or alternative methods to eliminate user gas fees
-- Authentication system upgrades for improved security
-- The Graph to have a record of all the events in Student contracts. Better way to have access to the wallets permissions.
-- Allow students to give permissions without a request.
