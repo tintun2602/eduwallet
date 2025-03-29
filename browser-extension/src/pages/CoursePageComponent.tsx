@@ -90,12 +90,12 @@ function Certificate(props: CertificateProps): JSX.Element {
             <hr className="my-2" />
             <Container className="list">
                 <Row>
-                    <Col className="purple-text text-13 list-title">
+                    <Col className="purple-text text-12 list-title">
                         Certificate
                     </Col>
                 </Row>
                 <Row>
-                    <Col className="text-16 list-content">
+                    <Col className="text-15 list-content">
                         <a className="" href={ipfsConfig.gatewayUrl + certificateCid} target="_blank">Click to open the certificate</a>
                     </Col>
                 </Row>

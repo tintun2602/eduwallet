@@ -30,7 +30,7 @@ export default function PermissionsPage(): JSX.Element {
      * @param {Permission} permission - The permission to process
      * @returns {Promise<void>} A promise that resolves when the action completes
      */
-    const handleClick = async (permission: Permission) => {
+    const handleClick = async (permission: Permission): Promise<void> => {
         const transaction = await performAction(student, permission);
         updatePermissions(permission);
         transaction.wait().catch(() => {

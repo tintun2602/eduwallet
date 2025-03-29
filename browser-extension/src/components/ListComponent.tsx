@@ -20,12 +20,12 @@ export default function List(props: ListProps): JSX.Element {
                 <React.Fragment key={`item-${index}`}>
                     <Container className="list">
                         <Row>
-                            <Col className="purple-text text-13 list-title">
+                            <Col className="purple-text text-12 list-title">
                                 {formatCamelCaseString(key)}
                             </Col>
                         </Row>
                         <Row>
-                            <Col className="text-16 list-content">
+                            <Col className="text-15 list-content">
                                 {obj[key]}
                             </Col>
                         </Row>

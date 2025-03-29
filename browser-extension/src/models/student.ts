@@ -1,5 +1,5 @@
 import { Wallet } from "ethers";
-import { Student } from '../../../typechain-types/contracts/Student';
+import type { Student } from '../../../typechain-types/contracts/Student';
 
 /**
  * Represents a student in the system with their personal information and academic results.

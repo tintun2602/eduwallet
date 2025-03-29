@@ -1,18 +1,18 @@
-import { ethers, Wallet } from 'ethers';
+import { Wallet, JsonRpcProvider } from 'ethers';
 import { derivePrivateKey } from './utils';
 import { StudentsRegister__factory } from "../../../typechain-types/factories/contracts/StudentsRegister__factory"
 import { Student__factory } from "../../../typechain-types/factories/contracts/Student__factory"
 import { Credentials, StudentModel } from "../models/student"
-import { StudentsRegister } from '../../../typechain-types/contracts/StudentsRegister';
+import type { StudentsRegister } from '../../../typechain-types/contracts/StudentsRegister';
 import UniversityModel from '../models/university';
 import { University__factory } from "../../../typechain-types/factories/contracts/University__factory"
 import { blockchainConfig, roleCodes } from './conf';
-import { Student } from '../../../typechain-types/contracts/Student';
-import { ContractTransactionResponse } from 'ethers';
+import type { Student } from '../../../typechain-types/contracts/Student';
+import type { ContractTransactionResponse } from 'ethers';
 import { Permission, PermissionType } from '../models/permissions';
 
 // Initialize provider once for reuse
-const provider = new ethers.JsonRpcProvider(blockchainConfig.url);
+const provider = new JsonRpcProvider(blockchainConfig.url);
 
 /**
  * Retrieves the StudentsRegister contract instance.
