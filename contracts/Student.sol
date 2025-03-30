@@ -9,6 +9,7 @@ error UnauthorizedReading();
 error UnauthorizedWriting();
 error NotExistingRecord();
 error WrongRole();
+error PermissionAlreadyGiven();
 
 /**
  * @title Student Smart Contract
@@ -188,7 +189,8 @@ contract Student is AccessControlEnumerable {
         for (uint i; i < studentInfo.results.length; ++i) {
             // Different universities may use the same code. Check also the university's name
             if (
-                keccak256(bytes(studentInfo.results[i].code)) == keccak256(bytes(_code)) &&
+                keccak256(bytes(studentInfo.results[i].code)) ==
+                keccak256(bytes(_code)) &&
                 studentInfo.results[i].university == _msgSender()
             ) {
                 studentInfo.results[i].grade = _grade;
@@ -206,13 +208,42 @@ contract Student is AccessControlEnumerable {
      * @param _permissionType Permission type requested (READER_APPLICANT or WRITER_APPLICANT)
      */
     function askForPermission(bytes32 _permissionType) external {
-        // Check if the permission exists
-        require(
-            _permissionType == WRITER_APPLICANT ||
-                _permissionType == READER_APPLICANT,
-            WrongRole()
-        );
+        // Validate permission type
+        if (
+            _permissionType != READER_APPLICANT &&
+            _permissionType != WRITER_APPLICANT
+        ) {
+            revert WrongRole();
+        }
 
+        // Check if already has the same or higher permission
+        if (
+            (_permissionType == READER_APPLICANT &&
+                hasRole(READER_ROLE, _msgSender())) ||
+            (hasRole(WRITER_ROLE, _msgSender()))
+        ) {
+            revert PermissionAlreadyGiven();
+        }
+
+        // Check if already applied for same or higher permission
+        if (
+            (_permissionType == READER_APPLICANT &&
+                hasRole(READER_APPLICANT, _msgSender())) ||
+            (hasRole(WRITER_APPLICANT, _msgSender()))
+        ) {
+            // Already applied, nothing to do
+            return;
+        }
+
+        // Remove lower level applications if applying for write permission
+        if (
+            _permissionType == WRITER_APPLICANT &&
+            hasRole(READER_APPLICANT, _msgSender())
+        ) {
+            revokeRole(READER_APPLICANT, _msgSender());
+        }
+
+        // Grant the requested applicant role
         _grantRole(_permissionType, _msgSender());
     }
 
@@ -227,13 +258,26 @@ contract Student is AccessControlEnumerable {
         address _university
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         // Check if the permission exists
-        require(
-            _permissionType == WRITER_ROLE || _permissionType == READER_ROLE,
-            WrongRole()
-        );
+        if (_permissionType != WRITER_ROLE && _permissionType != READER_ROLE) {
+            revert WrongRole();
+        }
 
+        // Grant the requested permission
         grantRole(_permissionType, _university);
-        // Delete the university form the applicants if present
+
+        // Remove lower permission if granting higher one, or vice versa
+        // (a university shouldn't have both read and write permissions simultaneously)
+        if (
+            _permissionType == WRITER_ROLE && hasRole(READER_ROLE, _university)
+        ) {
+            revokeRole(READER_ROLE, _university);
+        } else if (
+            _permissionType == READER_ROLE && hasRole(WRITER_ROLE, _university)
+        ) {
+            revokeRole(WRITER_ROLE, _university);
+        }
+
+        // Remove the university from the applicants list if present
         if (hasRole(WRITER_APPLICANT, _university)) {
             revokeRole(WRITER_APPLICANT, _university);
         } else if (hasRole(READER_APPLICANT, _university)) {
