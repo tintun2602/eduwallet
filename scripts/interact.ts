@@ -6,6 +6,7 @@ import * as hre from 'hardhat';
 import * as dotenv from 'dotenv'
 import * as fs from 'fs';
 import * as path from 'path';
+import { PermissionType } from 'eduwallet-sdk/src/types';
 
 const PROVIDER = hre.ethers.provider;
 dotenv.config();
@@ -85,25 +86,36 @@ async function main(): Promise<void> {
         console.log(`Address: ${process.env.DEPLOYED}`);
         console.log(`---------------------------------------------------\n`);
     }
-    const [deployer, university] = await Promise.all([
+    const [deployer, university1, university2] = await Promise.all([
         getDeployer(),
+        getUniversityWallet(),
         getUniversityWallet()
     ]);
 
-    // Register university
+    // Register university 1
     console.log("\nRegistering university...");
-    const universityTx = await studentsRegister.connect(university).subscribe(
+    const university1Tx = await studentsRegister.connect(university1).subscribe(
         "Politecnico di Torino",
         "Italy",
         "PoliTo"
     );
-    await universityTx.wait();
+    await university1Tx.wait();
+    console.log(`University registered`);
+
+    // Register university 2
+    console.log("\nRegistering university...");
+    const university2Tx = await studentsRegister.connect(university2).subscribe(
+        "Politecnico di Milano",
+        "Italy",
+        "PoliMi"
+    );
+    await university2Tx.wait();
     console.log(`University registered`);
 
     // Create a student wallet from password
     console.log("\nCreating student wallet...");
     const student = await eduwallet.registerStudent(
-        university,
+        university1,
         {
             name: "Diego",
             surname: "Da Giau",
@@ -146,7 +158,7 @@ async function main(): Promise<void> {
     ]
     // Enroll student
     console.log("\nEnrolling student...");
-    await eduwallet.enrollStudent(university, student.academicWalletAddress, courses);
+    await eduwallet.enrollStudent(university1, student.academicWalletAddress, courses);
 
     const pdfPath = "./certificate.pdf"
     const fileBuffer = fs.readFileSync(pdfPath);
@@ -159,10 +171,10 @@ async function main(): Promise<void> {
         certificate: "./certificate.pdf",
     }];
     console.log("\nEvaluating student...");
-    await eduwallet.evaluateStudent(university, student.academicWalletAddress, evaluations);
+    await eduwallet.evaluateStudent(university1, student.academicWalletAddress, evaluations);
 
     console.log("\nFetching student info...");
-    const studentNew = await eduwallet.getStudentInfo(university, student.academicWalletAddress);
+    const studentNew = await eduwallet.getStudentInfo(university1, student.academicWalletAddress);
     console.log(`---------------------------------------------------`);
     console.log(`STUDENT:`);
     console.log(`Name: ${studentNew.name}`);
@@ -173,7 +185,7 @@ async function main(): Promise<void> {
     console.log(`---------------------------------------------------`);
 
     console.log("\nFetching complete student info with results...");
-    const studentComplete = await eduwallet.getStudentWithResult(university, student.academicWalletAddress);
+    const studentComplete = await eduwallet.getStudentWithResult(university1, student.academicWalletAddress);
     console.log(`---------------------------------------------------`);
     console.log(`STUDENT:`);
     console.log(`Name: ${studentComplete.name}`);
@@ -193,6 +205,15 @@ async function main(): Promise<void> {
         console.log(`\tCertificate: ${result.certificate || "N/A"}\n`);
     }
     console.log(`---------------------------------------------------`);
+
+    console.log(`\nAsking for read permission...`)
+    await eduwallet.askForPermission(university2, student.academicWalletAddress, PermissionType.Read);
+    console.log(`Permission asked`);
+
+    console.log(`\nChecking for read permission...`)
+    const permission = await eduwallet.verifyPermission(university2, student.academicWalletAddress);
+    console.log(`PERMISSION:`);
+    console.log(`Type: ${permission ? permission : `null`}`);
 
     console.log("\nInteraction script completed successfully!");
 }

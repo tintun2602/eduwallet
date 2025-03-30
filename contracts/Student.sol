@@ -275,4 +275,22 @@ contract Student is AccessControlEnumerable {
         );
         return getRoleMembers(_permissionType);
     }
+
+    /**
+     * @notice Verifies the caller's highest permission level for this student wallet
+     * @dev Returns the highest permission role the caller has, with WRITER_ROLE taking precedence over READER_ROLE
+     * @return bytes32 The highest permission role (WRITER_ROLE, READER_ROLE, or bytes32(0) if no permission)
+     */
+    function verifyPermission() external view returns (bytes32) {
+        // Check for write permission first (highest privilege)
+        if (hasRole(WRITER_ROLE, _msgSender())) {
+            return WRITER_ROLE;
+        }
+        // Then check for read permission
+        if (hasRole(READER_ROLE, _msgSender())) {
+            return READER_ROLE;
+        }
+        // Return bytes32(0) if no permission
+        return bytes32(0);
+    }
 }

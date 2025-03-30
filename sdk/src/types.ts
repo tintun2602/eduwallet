@@ -107,3 +107,12 @@ export interface University {
     /** Abbreviated name or acronym of the university. */
     readonly shortName: string;
 }
+
+/**
+ * Represents permission types that can be granted to universities.
+ * @author Diego Da Giau
+ */
+export enum PermissionType {
+    Read,
+    Write,
+}

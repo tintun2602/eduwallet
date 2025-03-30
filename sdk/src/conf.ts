@@ -1,6 +1,6 @@
 import { S3Client, S3ClientConfig } from "@aws-sdk/client-s3";
 import * as dotenv from 'dotenv'
-import { JsonRpcProvider } from "ethers";
+import { JsonRpcProvider, id } from "ethers";
 
 /**
  * Load environment variables from .env file.
@@ -30,6 +30,21 @@ interface IpfsStorageConfig {
     s3Config: S3ClientConfig;
     /** S3 bucket name where certificates will be stored. */
     bucketName: string;
+}
+
+/**
+ * Configuration for role identifiers in the access control system.
+ * Defines the string identifiers for different permission levels.
+ */
+interface RoleCodes {
+    /** Role identifier for users requesting read access */
+    readRequest: string;
+    /** Role identifier for users requesting write access */
+    writeRequest: string;
+    /** Role identifier for users with approved read access */
+    read: string;
+    /** Role identifier for users with approved write access */
+    write: string;
 }
 
 /**
@@ -83,3 +98,18 @@ export const provider = new JsonRpcProvider(blockchainConfig.url);
  * Pre-configured with the settings from IPFS configuration.
  */
 export const s3Client = new S3Client(ipfsConfig.s3Config);
+
+/**
+ * Role identifiers used for access control.
+ * Uses Ethereum's id() function to generate role identifiers from string constants.
+ */
+export const roleCodes: RoleCodes = {
+    /** Role identifier for read access requesters */
+    readRequest: id("READER_APPLICANT"),
+    /** Role identifier for write access requesters */
+    writeRequest: id("WRITER_APPLICANT"),
+    /** Role identifier for approved readers */
+    read: id("READER_ROLE"),
+    /** Role identifier for approved writers */
+    write: id("WRITER_ROLE"),
+}

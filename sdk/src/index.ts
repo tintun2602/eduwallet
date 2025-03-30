@@ -1,7 +1,8 @@
 import type { ContractTransactionResponse, Wallet } from "ethers";
 import type { CourseInfo, Evaluation, Student, StudentCredentials, StudentData } from "./types";
+import { PermissionType } from "./types";
 import { computeDate, createStudentWallet, generateStudent, getStudentContract, getStudentsRegister, publishCertificate } from "./utils";
-import { provider } from "./conf";
+import { provider, roleCodes } from "./conf";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc.js';
 import type { Student as StudentContract } from '@typechain/contracts/Student';
@@ -75,6 +76,9 @@ export async function enrollStudent(universityWallet: Wallet, studentWalletAddre
     // Get student contract instance
     const studentWallet = getStudentContract(studentWalletAddress);
 
+    // Connect university wallet to provider
+    const connectedUniversity = universityWallet.connect(provider);
+
     // Array to track enrollment transactions with their corresponding course data
     const enrollmentPromises: { tx: Promise<ContractTransactionResponse>, course: CourseInfo }[] = [];
 
@@ -84,7 +88,7 @@ export async function enrollStudent(universityWallet: Wallet, studentWalletAddre
     // Submit all enrollment transactions in parallel
     for (const course of courses) {
         // Create transaction promise and track it with its course data
-        const tx = studentWallet.connect(universityWallet).enroll(
+        const tx = studentWallet.connect(connectedUniversity).enroll(
             course.code,
             course.name,
             course.degreeCourse,
@@ -126,6 +130,9 @@ export async function evaluateStudent(universityWallet: Wallet, studentWalletAdd
     // Get student contract instance
     const studentWallet = getStudentContract(studentWalletAddress);
 
+    // Connect university wallet to provider
+    const connectedUniversity = universityWallet.connect(provider);
+
     // Array to track evaluation transactions with their corresponding data
     const evaluationPromises: { tx: Promise<ContractTransactionResponse>, evaluation: Evaluation }[] = [];
 
@@ -137,7 +144,7 @@ export async function evaluateStudent(universityWallet: Wallet, studentWalletAdd
         const certificate = evaluation.certificate ? await publishCertificate(evaluation.certificate) : "";
 
         // Record evaluation on the blockchain
-        const tx = studentWallet.connect(universityWallet).evaluate(
+        const tx = studentWallet.connect(connectedUniversity).evaluate(
             evaluation.code,
             evaluation.grade,
             dayjs.utc(evaluation.evaluationDate).unix(),
@@ -175,8 +182,11 @@ export async function getStudentInfo(universityWallet: Wallet, studentWalletAddr
     // Get student contract instance
     const studentWallet = getStudentContract(studentWalletAddress);
 
+    // Connect university wallet to provider
+    const connectedUniversity = universityWallet.connect(provider);
+
     // Fetch student's basic information
-    const student = await studentWallet.connect(universityWallet).getStudentBasicInfo();
+    const student = await studentWallet.connect(connectedUniversity).getStudentBasicInfo();
 
     // Format and return student data
     return {
@@ -200,12 +210,68 @@ export async function getStudentWithResult(universityWallet: Wallet, studentWall
     // Get student contract instance
     const studentWallet = getStudentContract(studentWalletAddress);
 
+    // Connect university wallet to provider
+    const connectedUniversity = universityWallet.connect(provider);
+
     // Fetch student data and results in parallel for efficiency
     const [student, results] = await Promise.all([
-        studentWallet.connect(universityWallet).getStudentBasicInfo(),
-        studentWallet.connect(universityWallet).getResults(),
+        studentWallet.connect(connectedUniversity).getStudentBasicInfo(),
+        studentWallet.connect(connectedUniversity).getResults(),
     ]);
 
     // Generate complete student object with processed results
-    return await generateStudent(universityWallet, student, results);
+    return await generateStudent(connectedUniversity, student, results);
+}
+
+/**
+ * Requests permission to access a student's academic wallet.
+ * Universities must request access before they can read or modify student records.
+ * @author Diego Da Giau
+ * @param {Wallet} universityWallet - The university wallet requesting permission
+ * @param {string} studentWalletAddress - The student's academic wallet address
+ * @param {PermissionType} type - Type of permission requested (Read or Write)
+ * @returns {Promise<void>} Promise that resolves when the permission request is submitted and confirmed
+ */
+export async function askForPermission(universityWallet: Wallet, studentWalletAddress: string, type: PermissionType): Promise<void> {
+    // Get student contract instance
+    const studentWallet = getStudentContract(studentWalletAddress);
+
+    // Connect university wallet to provider
+    const connectedUniversity = universityWallet.connect(provider);
+
+    // Determine the permission code based on requested type
+    const permission = type === PermissionType.Read ? roleCodes.readRequest : roleCodes.writeRequest;
+
+    // Submit permission request transaction
+    const tx = await studentWallet.connect(connectedUniversity).askForPermission(permission);
+    // Wait for transaction confirmation
+    await tx.wait();
+}
+
+/**
+ * Verifies a university's permission level for a student's academic wallet.
+ * @author Diego Da Giau
+ * @param {Wallet} universityWallet - The university wallet to check permissions for
+ * @param {string} studentWalletAddress - The student's academic wallet address
+ * @returns {Promise<PermissionType | null>} The highest permission level (Read or Write) or null if no permission
+ */
+export async function verifyPermission(universityWallet: Wallet, studentWalletAddress: string): Promise<PermissionType | null> {
+    // Get student contract instance
+    const studentWallet = getStudentContract(studentWalletAddress);
+
+    // Connect university wallet to provider
+    const connectedUniversity = universityWallet.connect(provider);
+
+    // Check permission level on blockchain
+    const permission = await studentWallet.connect(connectedUniversity).verifyPermission();
+
+    // Check permission level on blockchain
+    if (permission === roleCodes.read) {
+        return PermissionType.Read;
+    } else if (permission === roleCodes.write) {
+        return PermissionType.Write;
+    }
+
+    // If no permission, return null
+    return null;
 }
