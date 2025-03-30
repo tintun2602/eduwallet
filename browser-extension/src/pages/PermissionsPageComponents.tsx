@@ -5,7 +5,7 @@ import type { JSX } from "react"
 import Header from "../components/HeaderComponent";
 import { performAction } from "../API";
 import { useAuth } from "../providers/AuthenticationProvider";
-import type { Permission } from "../models/permissions";
+import { PermissionType, type Permission } from "../models/permissions";
 import { Col, Container, Row } from "react-bootstrap";
 import { usePermissions } from '../providers/PermissionsProvider';
 import { useUniversities } from '../providers/UniversitiesProvider';
@@ -146,6 +146,15 @@ function Permission(props: PermissionProps): JSX.Element {
     const university = props.university;
     const handleClick = props.handleClick;
 
+    let label = "";
+    if (permission.request && permission.type === PermissionType.Read) {
+        label = "Read";
+    } else if (permission.request && permission.type === PermissionType.Write) {
+        label = "Write";
+    } else {
+        label = "Revoke";
+    }
+
     return (
         <>
             <Row className="align-items-center mb-1">
@@ -153,7 +162,7 @@ function Permission(props: PermissionProps): JSX.Element {
                     {university ? university.name : "Unknown university"}
                 </Col>
                 <Col>
-                    <button className={"permission-button" + " " + (permission.request ? "request" : "revoke")} onClick={() => handleClick(permission)}>{permission.request ? permission.type : "Revoke"}</button>
+                    <button className={"permission-button" + " " + (permission.request ? "request" : "revoke")} onClick={() => handleClick(permission)}>{label}</button>
                 </Col>
             </Row>
         </>

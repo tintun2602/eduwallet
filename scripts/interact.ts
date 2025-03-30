@@ -160,6 +160,7 @@ async function main(): Promise<void> {
     console.log("\nEnrolling student...");
     await eduwallet.enrollStudent(university1, student.academicWalletAddress, courses);
 
+    // Evaluate student
     const pdfPath = "./certificate.pdf"
     const fileBuffer = fs.readFileSync(pdfPath);
     const fileName = path.basename(pdfPath);

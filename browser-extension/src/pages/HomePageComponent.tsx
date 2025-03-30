@@ -62,7 +62,7 @@ export default function Homepage(): JSX.Element {
             {/* Results part */}
             <Container>
                 <Row className="mt-3 mb-2">
-                    {universities.map(u => <UniversityButton key={u.universityAddress} university={u} activeUniversity={activeUniversity} setActiveUniversity={setActiveUniversity} />)}
+                    {universities.filter(u => student.getResultsByUniversity(u.universityAddress).length > 0).map(u => <UniversityButton key={u.universityAddress} university={u} activeUniversity={activeUniversity} setActiveUniversity={setActiveUniversity} />)}
                 </Row>
                 <Container className="p-0 main-content courses-list">
                     <UniversityResults results={student.getResultsByUniversityGroupedByCourseDegree(activeUniversity)} />
