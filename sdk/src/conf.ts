@@ -40,7 +40,7 @@ export const blockchainConfig: BlockchainNetworkConfig = {
     /** Network endpoint - configure via NETWORK_URL env var. */
     url: process.env.NETWORK_URL || "http://127.0.0.1:8545",
     /** StudentsRegister contract address - configure via REGISTER_ADDRESS env var. */
-    registerAddress: process.env.REGISTER_ADDRESS || "0xF2E246BB76DF876Cef8b38ae84130F4F55De395b",
+    registerAddress: process.env.REGISTER_ADDRESS || "0xDe09E74d4888Bc4e65F589e8c13Bce9F71DdF4c7",
 }
 
 /**

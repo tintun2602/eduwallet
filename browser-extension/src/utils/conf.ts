@@ -42,7 +42,7 @@ export const blockchainConfig: BlockchainNetworkConfig = {
     /** Network endpoint. */
     url: "http://127.0.0.1:8545",
     /** StudentsRegister contract address. */
-    registerAddress: "0xF2E246BB76DF876Cef8b38ae84130F4F55De395b",
+    registerAddress: "0xDe09E74d4888Bc4e65F589e8c13Bce9F71DdF4c7",
 }
 
 /**

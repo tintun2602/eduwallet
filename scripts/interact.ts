@@ -11,12 +11,30 @@ const PROVIDER = hre.ethers.provider;
 dotenv.config();
 
 async function deployStudentsRegister(): Promise<StudentsRegister> {
+    const StudentDeployer = await hre.ethers.getContractFactory("StudentDeployer");
+    const studentDeployer = await StudentDeployer.deploy();
+    await studentDeployer.waitForDeployment();
+    const studentDeployerAddress = await studentDeployer.getAddress();
+
+    const UniversityDeployer = await hre.ethers.getContractFactory("UniversityDeployer");
+    const universityDeployer = await UniversityDeployer.deploy();
+    await universityDeployer.waitForDeployment();
+    const universityDeployerAddress = await universityDeployer.getAddress();
+
     const StudentsRegister = await hre.ethers.getContractFactory("StudentsRegister");
-    const studentsRegister = await StudentsRegister.deploy();
+    const studentsRegister = await StudentsRegister.deploy(studentDeployerAddress, universityDeployerAddress);
 
     await studentsRegister.waitForDeployment();
 
     const address = await studentsRegister.getAddress();
+    console.log(`\n---------------------------------------------------`);
+    console.log(`STUDENT DEPLOYER:`);
+    console.log(`Address: ${studentDeployerAddress}`);
+    console.log(`---------------------------------------------------\n`);
+    console.log(`\n---------------------------------------------------`);
+    console.log(`UNIVERSITY DEPLOYER:`);
+    console.log(`Address: ${universityDeployerAddress}`);
+    console.log(`---------------------------------------------------\n`);
     console.log(`\n---------------------------------------------------`);
     console.log(`STUDENT REGISTER:`);
     console.log(`Address: ${address}`);

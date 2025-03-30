@@ -3,9 +3,9 @@
 pragma solidity >=0.8.2;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import "./Student.sol";
-import "./University.sol";
+import {Student} from "./Student.sol";
+import {StudentDeployer} from "./StudentDeployer.sol";
+import {UniversityDeployer} from "./UniversityDeployer.sol";
 
 // Custom errors for better clarity
 error AlreadyExistingUniversity();
@@ -25,6 +25,9 @@ error StudentNotPresent();
  * ? Is it better to save universities wallets addresses directly in the student's wallet?
  */
 contract StudentsRegister is AccessControl {
+    StudentDeployer private studentDeployer;
+    UniversityDeployer private universityDeployer;
+
     // Role definitions for access control
     bytes32 private constant UNIVERSITY_ROLE = keccak256("UNIVERSITY_ROLE");
     bytes32 private constant STUDENT_ROLE = keccak256("STUDENT_ROLE");
@@ -33,6 +36,12 @@ contract StudentsRegister is AccessControl {
     mapping(address university => address universityWallet)
         private universityWallets;
     mapping(address student => address studentWallet) private studentWallets;
+
+    constructor(address _studentDeployer, address _universityDeployer) {
+        studentDeployer = StudentDeployer(_studentDeployer);
+        universityDeployer = UniversityDeployer(_universityDeployer);
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
 
     /**
      * @notice Registers a new university in the system
@@ -50,8 +59,11 @@ contract StudentsRegister is AccessControl {
             AlreadyExistingUniversity()
         );
 
-        University newUniversity = new University(_name, _country, _shortName);
-        address addr = address(newUniversity);
+        address addr = universityDeployer.createUniversity(
+            _name,
+            _country,
+            _shortName
+        );
         universityWallets[_msgSender()] = addr;
         _grantRole(UNIVERSITY_ROLE, _msgSender());
         return addr;
@@ -104,11 +116,14 @@ contract StudentsRegister is AccessControl {
         // Check if student is not already registered
         require(!hasRole(STUDENT_ROLE, _student), AlreadyExistingStudent());
 
-        // Deploy new Student contract for this student
-        Student newStudent = new Student(_msgSender(), _student, _basicInfo);
+        address studentAddr = studentDeployer.createStudent(
+            _msgSender(),
+            _student,
+            _basicInfo
+        );
 
         // Store student's contract address and grant student role
-        studentWallets[_student] = address(newStudent);
+        studentWallets[_student] = studentAddr;
         _grantRole(STUDENT_ROLE, _student);
     }
 
