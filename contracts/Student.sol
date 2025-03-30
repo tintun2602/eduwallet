@@ -267,7 +267,10 @@ contract Student is AccessControlEnumerable {
     ) external view onlyRole(DEFAULT_ADMIN_ROLE) returns (address[] memory) {
         // Check if the permission exists
         require(
-            _permissionType == WRITER_ROLE || _permissionType == READER_ROLE || _permissionType == READER_APPLICANT || _permissionType == WRITER_APPLICANT,
+            _permissionType == WRITER_ROLE ||
+                _permissionType == READER_ROLE ||
+                _permissionType == READER_APPLICANT ||
+                _permissionType == WRITER_APPLICANT,
             WrongRole()
         );
         return getRoleMembers(_permissionType);
