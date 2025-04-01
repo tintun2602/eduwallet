@@ -1,0 +1,21 @@
+{
+  "name": "eduwallet-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "commander": "^13.1.0",
+    "figlet": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/figlet": "^1.7.0",
+    "tsup": "^8.4.0"
+  }
+}

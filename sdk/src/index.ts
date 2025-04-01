@@ -10,7 +10,7 @@ import type { Student as StudentContract } from '@typechain/contracts/Student';
 /**
  * Re-export types for SDK consumers
  */
-export type { StudentCredentials, StudentData, CourseInfo, Evaluation, Student };
+export type { StudentCredentials, StudentData, CourseInfo, Evaluation, Student, PermissionType };
 export { getStudentsRegister };
 
 // Configure dayjs to use UTC for consistent date handling across timezones

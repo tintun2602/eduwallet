@@ -10,18 +10,18 @@ const config: HardhatUserConfig = {
           balance: "10000000000000000000000000000000",
           privateKey: "0x0000000000000000000000000000000000000000000000000000000000000001"
         }
-      ],
-      mining: {
-        auto: true,
-        interval: 20000
-      }
+      ]
+      // mining: {
+      //   auto: true,
+      //   interval: 20000
+      // }
     },
     localhost: {
-      url: "http://127.0.0.1:8545",
-      mining: {
-        auto: true,
-        interval: 20000
-      }
+      url: "http://127.0.0.1:8545"
+      // mining: {
+      //   auto: true,
+      //   interval: 20000
+      // }
     },
   },
   paths: {
