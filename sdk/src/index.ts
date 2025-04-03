@@ -1,4 +1,4 @@
-import type { ContractTransactionResponse, Wallet } from "ethers";
+import { NonceManager, type ContractTransactionResponse, type Wallet } from "ethers";
 import type { CourseInfo, Evaluation, Student, StudentCredentials, StudentData } from "./types";
 import { PermissionType } from "./types";
 import { computeDate, createStudentWallet, generateStudent, getStudentContract, getStudentsRegister, publishCertificate } from "./utils";
@@ -10,7 +10,8 @@ import type { Student as StudentContract } from '@typechain/contracts/Student';
 /**
  * Re-export types for SDK consumers
  */
-export type { StudentCredentials, StudentData, CourseInfo, Evaluation, Student, PermissionType };
+export type { StudentCredentials, StudentData, CourseInfo, Evaluation, Student };
+export { PermissionType };
 export { getStudentsRegister };
 
 // Configure dayjs to use UTC for consistent date handling across timezones
@@ -77,7 +78,7 @@ export async function enrollStudent(universityWallet: Wallet, studentWalletAddre
     const studentWallet = getStudentContract(studentWalletAddress);
 
     // Connect university wallet to provider
-    const connectedUniversity = universityWallet.connect(provider);
+    const connectedUniversity = new NonceManager(universityWallet.connect(provider));
 
     // Array to track enrollment transactions with their corresponding course data
     const enrollmentPromises: { tx: Promise<ContractTransactionResponse>, course: CourseInfo }[] = [];
@@ -130,8 +131,9 @@ export async function evaluateStudent(universityWallet: Wallet, studentWalletAdd
     // Get student contract instance
     const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Connect university wallet to provider
-    const connectedUniversity = universityWallet.connect(provider);
+    // Connect university wallet to provider with NonceManager
+    // The NonceManager wrapper handles transaction nonce tracking automatically, allowing multiple concurrent transactions without nonce conflicts
+    const connectedUniversity = new NonceManager(universityWallet.connect(provider));
 
     // Array to track evaluation transactions with their corresponding data
     const evaluationPromises: { tx: Promise<ContractTransactionResponse>, evaluation: Evaluation }[] = [];
