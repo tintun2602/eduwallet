@@ -13,6 +13,7 @@ import UniversitiesProvider from './providers/UniversitiesProvider';
 import PermissionsPage from './pages/PermissionsPageComponents';
 import Layout from './components/LayoutComponent';
 import PermissionsProvider from './providers/PermissionsProvider';
+import MessagesProvider from './providers/MessagesProvider';
 
 
 /**
@@ -32,17 +33,19 @@ function App(): JSX.Element {
     <AuthenticationProvider>
       <UniversitiesProvider>
         <PermissionsProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route element={<PrivateRoute />}>
-              <Route element={<Layout />}>
-                <Route path="/wallet" element={<Homepage />} />
-                <Route path='/student' element={<StudentPage />} />
-                <Route path='/wallet/:code' element={<CoursePage />} />
-                <Route path='/permissions' element={<PermissionsPage />} />
+          <MessagesProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route element={<PrivateRoute />}>
+                <Route element={<Layout />}>
+                  <Route path="/wallet" element={<Homepage />} />
+                  <Route path='/student' element={<StudentPage />} />
+                  <Route path='/wallet/:code' element={<CoursePage />} />
+                  <Route path='/permissions' element={<PermissionsPage />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
+            </Routes>
+          </MessagesProvider>
         </PermissionsProvider>
       </UniversitiesProvider>
     </AuthenticationProvider>

@@ -13,7 +13,7 @@ interface AuthenticationProviderProps {
     /** Currently authenticated student model */
     student: StudentModel,
     /** Function to authenticate a student with credentials */
-    login(credentials: Credentials): Promise<void>
+    login(credentials: Credentials): Promise<void>,
 }
 
 /**
