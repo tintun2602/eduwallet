@@ -1,5 +1,5 @@
 import { Wallet, JsonRpcProvider } from 'ethers';
-import { derivePrivateKey } from './utils';
+import { derivePrivateKey, formatDate } from './utils';
 import { StudentsRegister__factory } from "../../../typechain-types/factories/contracts/StudentsRegister__factory"
 import { Student__factory } from "../../../typechain-types/factories/contracts/Student__factory"
 import { Credentials, StudentModel } from "../models/student"
@@ -65,7 +65,7 @@ export async function getStudent(student: StudentModel): Promise<void> {
         student.name = basicInfo.name;
         student.surname = basicInfo.surname;
         student.birthPlace = basicInfo.birthPlace;
-        student.birthDate = new Date(Number(basicInfo.birthDate) * 1000).toLocaleDateString();
+        student.birthDate = formatDate(basicInfo.birthDate);
         student.country = basicInfo.country;
 
         // Update academic results

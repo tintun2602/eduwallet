@@ -7,7 +7,6 @@ import { Col, Container, Image, Row } from "react-bootstrap";
 import List from "../components/ListComponent";
 import type { JSX } from "react";
 import { useUniversities } from "../providers/UniversitiesProvider";
-import { formatDate } from "../utils/utils";
 import { ipfsConfig } from "../utils/conf";
 
 /**
@@ -36,7 +35,7 @@ export default function CoursePage(): JSX.Element {
         )?.name || 'Unknown University',
         degreeCourse: result.degreeCourse,
         grade: result.grade,
-        date: formatDate(parseInt(`${result.date}`)),
+        date: result.date,
     };
 
     // Navigation handler for back button

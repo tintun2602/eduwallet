@@ -52,25 +52,14 @@ export function formatCamelCaseString(str: string): string {
     return formattedString;
 }
 
+
 /**
- * Formats a Unix timestamp into a date string in DD-MM-YYYY format.
+ * Formats a Unix timestamp into a human-readable local date string.
+ * Converts the blockchain timestamp (in seconds) to milliseconds before formatting.
  * @author Diego Da Giau
- * @param {number} timestamp - Unix timestamp in milliseconds
- * @returns {string} Formatted date string in DD-MM-YYYY format, or "N/D" string if timestamp is 0
+ * @param {bigint} timestamp - The Unix timestamp in seconds (as a bigint).
+ * @returns {string} A localized date string representation of the timestamp.
  */
-export function formatDate(timestamp: number): string {
-    // Return empty string for invalid/empty dates
-    if (timestamp === 0) {
-        return "N/D";
-    }
-
-    // Convert Unix timestamp to milliseconds and create Date
-    const date = new Date(timestamp);
-
-    // Format date using British locale
-    return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+export function formatDate(timestamp: bigint): string {
+    return new Date(Number(timestamp) * 1000).toLocaleDateString();
 }

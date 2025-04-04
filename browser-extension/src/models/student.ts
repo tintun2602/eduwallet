@@ -1,5 +1,6 @@
 import { Wallet } from "ethers";
 import type { Student } from '../../../typechain-types/contracts/Student';
+import { formatDate } from "../utils/utils";
 
 /**
  * Represents a student in the system with their personal information and academic results.
@@ -97,7 +98,7 @@ export class StudentModel {
             university: r.university,
             degreeCourse: r.degreeCourse,
             grade: r.grade === "" ? "N/D" : r.grade,
-            date: r.date,
+            date: formatDate(r.date),
             ects: Number(r.ects)/100,
             certificateCid: r.certificateHash,
         }));
@@ -136,7 +137,7 @@ export interface Result {
     /** Academic grade received (or "N/D" if not available) */
     readonly grade: string;
     /** Timestamp of when the result was recorded */
-    readonly date: bigint;
+    readonly date: string;
     /** Number of European Credit Transfer System credits */
     readonly ects: number;
     /** Content identifier for the certificate in IPFS */
