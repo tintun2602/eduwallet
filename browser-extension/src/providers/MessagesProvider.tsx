@@ -6,7 +6,7 @@ import '../styles/MessagesProviderStyle.css'
  * Enum defining the types of messages that can be displayed.
  * @author Diego Da Giau
  */
-enum MessageType {
+export enum MessageType {
     Error = 'error',
 }
 
@@ -71,7 +71,7 @@ export default function MessagesProvider({ children }: { children: React.ReactNo
         setVisible(true);
         const id = setTimeout(() => {
             setVisible(false)
-        }, 2000);
+        }, 4000);
         setTimeoutId(id);
     }
 

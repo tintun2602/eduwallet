@@ -30,10 +30,10 @@ import MessagesProvider from './providers/MessagesProvider';
  */
 function App(): JSX.Element {
   return (
-    <AuthenticationProvider>
-      <UniversitiesProvider>
-        <PermissionsProvider>
-          <MessagesProvider>
+    <MessagesProvider>
+      <AuthenticationProvider>
+        <UniversitiesProvider>
+          <PermissionsProvider>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route element={<PrivateRoute />}>
@@ -45,10 +45,10 @@ function App(): JSX.Element {
                 </Route>
               </Route>
             </Routes>
-          </MessagesProvider>
-        </PermissionsProvider>
-      </UniversitiesProvider>
-    </AuthenticationProvider>
+          </PermissionsProvider>
+        </UniversitiesProvider>
+      </AuthenticationProvider>
+    </MessagesProvider>
   );
 }
 

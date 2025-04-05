@@ -3,8 +3,6 @@ import '../styles/PermissionPageStyle.css';
 import { useEffect } from "react";
 import type { JSX } from "react"
 import Header from "../components/HeaderComponent";
-import { performAction } from "../API";
-import { useAuth } from "../providers/AuthenticationProvider";
 import { PermissionType, type Permission } from "../models/permissions";
 import { Col, Container, Row } from "react-bootstrap";
 import { usePermissions } from '../providers/PermissionsProvider';
@@ -19,24 +17,16 @@ import UniversityModel from '../models/university';
  */
 export default function PermissionsPage(): JSX.Element {
     // Get permissions data and functions from context
-    const { requests, read, write, updatePermissions, loadPermissions, revertUpdate } = usePermissions();
-    
-    // Get authenticated student data
-    const student = useAuth().student;
+    const { requests, read, write, updatePermissions, loadPermissions } = usePermissions();
 
     /**
-     * Handles permission actions (approve requests or revoke permissions).
-     * Updates UI immediately and reverts on transaction failure.
+     * Forwards permission action requests to the context provider.
+     * Triggers the permission update process (approve requests or revoke permissions) through the updatePermissions context method.
      * @param {Permission} permission - The permission to process
-     * @returns {Promise<void>} A promise that resolves when the action completes
+     * @returns {Promise<void>} A promise that resolves when the action is initiated
      */
     const handleClick = async (permission: Permission): Promise<void> => {
-        const transaction = await performAction(student, permission);
-        updatePermissions(permission);
-        transaction.wait().catch(() => {
-            revertUpdate(permission);
-            // TODO: Add error handling
-        });
+        await updatePermissions(permission);
     };
 
     // Load permissions data when component mounts
@@ -88,7 +78,7 @@ function PermissionsByCategory(props: PermissionsByCategoryProps): JSX.Element {
     const permissions = props.permissions;
     const title = props.title;
     const handleClick = props.handleClick;
-    
+
     // Get universities data from context to display university names
     const universities = useUniversities().universities;
 

@@ -4,6 +4,7 @@ import { StudentModel } from "./models/student";
 import type UniversityModel from "./models/university";
 import { getRawPermissions, getStudent, getStudentsRegister, getStudentWallet, getUniversity, grantPermission, revokePermission } from "./utils/contractsUtils";
 import { Permission } from "./models/permissions";
+import { logError } from "./utils/conf";
 
 /**
  * Authenticates a student and retrieves their information.
@@ -14,16 +15,27 @@ import { Permission } from "./models/permissions";
  */
 export async function logIn(credentials: Credentials): Promise<StudentModel> {
     try {
+        if (!credentials || !credentials.id || !credentials.password) {
+            throw new Error('Invalid credentials: Missing ID or password');
+        }
+
         // Get contract instance and create student wallet
         const studentWalletPromise = getStudentWallet(credentials);
         const studentsRegister = getStudentsRegister();
 
         const studentWallet = await studentWalletPromise;
+        if (!studentWallet) {
+            throw new Error('Failed to create student wallet');
+        }
 
         // Get student's smart contract address
         const contractAddress = await studentsRegister
             .connect(studentWallet)
             .getStudentWallet(studentWallet.address);
+        
+        if (!contractAddress) {
+            throw new Error('Student contract address not found');
+        }
 
         // Create and populate student model
         const student = new StudentModel(credentials.id, studentWallet, contractAddress);
@@ -31,8 +43,11 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
 
         return student;
     } catch (error) {
-        console.log("Student login failed: ", error);
-        throw new Error('Authentication failed. Please check your credentials.');
+        logError("Student login failed: ", error);
+        if (`${error}`.includes('StudentNotPresent')) {
+            throw new Error('Authentication failed. Check your credentials.')
+        }
+        throw new Error('Connection issues. Try again.');
     }
 }
 
@@ -45,11 +60,15 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
  * @throws {Error} If universities cannot be retrieved or connection fails
  */
 export async function getUniversities(student: StudentModel, universitiesAddresses: string[]): Promise<UniversityModel[]> {
-    if (universitiesAddresses.length === 0) {
-        return [];
-    }
-
     try {
+        if (!student || !student.wallet) {
+            throw new Error('Student not properly authenticated');
+        }
+
+        if (!universitiesAddresses || universitiesAddresses.length === 0) {
+            return [];
+        }
+
         // Get contract instance and university addresses
         const studentsRegister = getStudentsRegister();
 
@@ -57,21 +76,29 @@ export async function getUniversities(student: StudentModel, universitiesAddress
         const universitiesWallets = await studentsRegister
             .connect(student.wallet)
             .getUniversitiesWallets(universitiesAddresses);
+            
+        if (!universitiesWallets || universitiesWallets.length !== universitiesAddresses.length) {
+            throw new Error('Failed to retrieve university wallet addresses');
+        }
 
         // Create university models with full information
         const universities: UniversityModel[] = [];
         for (let i = 0; i < universitiesWallets.length; ++i) {
-            const university = await getUniversity(
-                student,
-                universitiesAddresses[i],
-                universitiesWallets[i]
-            );
-            universities.push(university);
+            try {
+                const university = await getUniversity(
+                    student,
+                    universitiesAddresses[i],
+                    universitiesWallets[i]
+                );
+                universities.push(university);
+            } catch (universityError) {
+                logError(`Failed to fetch university at index ${i}:`, universityError);
+            }
         }
 
         return universities;
     } catch (error) {
-        console.error('Universities retrieval failed:', error);
+        logError('Universities retrieval failed:', error);
         throw new Error('Failed to retrieve universities. Please try again later.');
     }
 }
@@ -81,9 +108,19 @@ export async function getUniversities(student: StudentModel, universitiesAddress
  * @author Diego Da Giau
  * @param {StudentModel} student - The authenticated student model
  * @returns {Promise<Permission[]>} Array of all permissions (both requests and granted)
+ * @throws {Error} If permissions cannot be retrieved from the blockchain
  */
 export async function getPermissions(student: StudentModel): Promise<Permission[]> {
-    return getRawPermissions(student);
+    try {
+        if (!student || !student.wallet) {
+            throw new Error('Student not properly authenticated');
+        }
+        
+        return await getRawPermissions(student);
+    } catch (error) {
+        logError('Failed to fetch permissions:', error);
+        throw new Error('Could not retrieve permission information');
+    }
 }
 
 /**
@@ -94,10 +131,29 @@ export async function getPermissions(student: StudentModel): Promise<Permission[
  * @param {StudentModel} student - The authenticated student model
  * @param {Permission} permission - The permission to process
  * @returns {Promise<ContractTransactionResponse>} Transaction response from the blockchain
+ * @throws {Error} If permission action cannot be performed
  */
 export async function performAction(student: StudentModel, permission: Permission): Promise<ContractTransactionResponse> {
-    if (permission.request) {
-        return grantPermission(student, permission);
+    try {
+        if (!student || !student.wallet) {
+            throw new Error('Student not properly authenticated');
+        }
+        
+        if (!permission) {
+            throw new Error('Permission object is required');
+        }
+        
+        if (!permission.university) {
+            throw new Error('University address is missing in permission');
+        }
+        
+        if (permission.request) {
+            return await grantPermission(student, permission);
+        }
+        return await revokePermission(student, permission.university);
+    } catch (error) {
+        logError('Failed to perform permission action:', error);
+        const action = permission?.request ? 'grant' : 'revoke';
+        throw new Error(`Could not ${action} permission. Please try again later.`);
     }
-    return revokePermission(student, permission.university);
 }

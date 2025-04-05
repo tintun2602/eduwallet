@@ -3,6 +3,7 @@ import type { JSX } from "react";
 import { Credentials, StudentModel } from "../models/student";
 import { logIn } from "../API"
 import { useNavigate } from "react-router-dom";
+import { MessageType, useMessages } from "./MessagesProvider";
 
 /**
  * Interface defining the shape of the AuthenticationContext.
@@ -36,10 +37,13 @@ const AuthContext = createContext<AuthenticationProviderProps>({
 export default function AuthenticationProvider({ children }: { children: React.ReactNode }): JSX.Element {
     // State for storing the authenticated student
     const [student, setStudent] = useState<StudentModel>(StudentModel.createEmpty());
-    
+
     // Navigation hook for redirecting after login
     const navigate = useNavigate();
-    
+
+    // Get the messages functionality at the component level
+    const showMessage = useMessages().showMessage;
+
     /**
      * Authenticates a student using the provided credentials.
      * Updates the student state and redirects to wallet page on success.
@@ -51,14 +55,14 @@ export default function AuthenticationProvider({ children }: { children: React.R
         try {
             // Attempt to authenticate with provided credentials
             const studentTemp = await logIn(credentials);
-            
+
             // Update authenticated student state
             setStudent(studentTemp);
-            
+
             // Redirect to wallet page on successful login
             navigate("/wallet");
-        } catch (err) {
-            // Silent error handling (could be enhanced with error feedback)
+        } catch (err: any) {
+            showMessage(err.message, MessageType.Error);
         }
     };
 

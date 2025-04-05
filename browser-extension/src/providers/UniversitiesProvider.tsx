@@ -3,6 +3,7 @@ import type { JSX } from "react";
 import { useAuth } from "./AuthenticationProvider";
 import UniversityModel from "../models/university";
 import { getUniversities } from "../API";
+import { MessageType, useMessages } from "./MessagesProvider";
 
 /**
  * Interface defining the shape of the UniversitiesContext.
@@ -38,6 +39,9 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
     // State for storing universities data
     const [universities, setUniversities] = useState<UniversityModel[]>([]);
 
+    // Get the messages functionality at the component level
+    const showMessage = useMessages().showMessage;
+
     /**
      * Fetches universities data and updates state.
      * Uses the authenticated student to retrieve relevant universities.
@@ -48,8 +52,9 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
             const universitiesAddresses = Array.from(student.getResultsUniversities());
             const universitiesTmp = await getUniversities(student, universitiesAddresses);
             setUniversities(universitiesTmp);
-        } catch (error) {
+        } catch (error: any) {
             setUniversities([]);
+            showMessage(error.message, MessageType.Error);
         }
     };
 
@@ -60,10 +65,14 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
      * @returns {Promise<void>} A promise that resolves when new universities are added
      */
     const updateUniversities = async (universitiesAddresses: string[]): Promise<void> => {
-        const universitiesSet = new Set(universities.map(u => u.universityAddress));
-        const filteredAddresses = universitiesAddresses.filter(a => !universitiesSet.has(a));
-        const universitiesTmp = await getUniversities(student, filteredAddresses);
-        setUniversities(old => [...old, ...universitiesTmp]);
+        try {
+            const universitiesSet = new Set(universities.map(u => u.universityAddress));
+            const filteredAddresses = universitiesAddresses.filter(a => !universitiesSet.has(a));
+            const universitiesTmp = await getUniversities(student, filteredAddresses);
+            setUniversities(old => [...old, ...universitiesTmp]);
+        } catch (error: any) {
+            showMessage(error.message, MessageType.Error);
+        }
     };
 
     /**
