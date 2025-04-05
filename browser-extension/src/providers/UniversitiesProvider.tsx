@@ -80,10 +80,7 @@ export default function UniversitiesProvider({ children }: { children: React.Rea
      * Fetches university data on component mount and when student changes.
      */
     useEffect(() => {
-        const loadUniversities = async () => {
-            fetchUniversities()
-        };
-        loadUniversities();
+        fetchUniversities()
     }, [student]);
 
     // Provide universities data and fetch method to children
