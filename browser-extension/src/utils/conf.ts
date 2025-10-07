@@ -5,10 +5,10 @@ import { id, JsonRpcProvider } from "ethers";
  * Defines parameters needed to connect to Ethereum networks.
  */
 interface BlockchainNetworkConfig {
-    /** JSON-RPC endpoint URL for the Ethereum network. */
-    readonly url: string;
-    /** Smart contract address for the StudentsRegister contract. */
-    readonly registerAddress: string;
+  /** JSON-RPC endpoint URL for the Ethereum network. */
+  readonly url: string;
+  /** Smart contract address for the StudentsRegister contract. */
+  readonly registerAddress: string;
 }
 
 /**
@@ -16,8 +16,8 @@ interface BlockchainNetworkConfig {
  * Defines parameters needed to retrieve certificates.
  */
 interface IpfsStorageConfig {
-    /** Gateway URL for retrieving IPFS content */
-    gatewayUrl: string;
+  /** Gateway URL for retrieving IPFS content */
+  gatewayUrl: string;
 }
 
 /**
@@ -25,33 +25,33 @@ interface IpfsStorageConfig {
  * Defines the string identifiers for different permission levels.
  */
 interface RoleCodes {
-    /** Role identifier for users requesting read access */
-    readRequest: string;
-    /** Role identifier for users requesting write access */
-    writeRequest: string;
-    /** Role identifier for users with approved read access */
-    read: string;
-    /** Role identifier for users with approved write access */
-    write: string;
+  /** Role identifier for users requesting read access */
+  readRequest: string;
+  /** Role identifier for users requesting write access */
+  writeRequest: string;
+  /** Role identifier for users with approved read access */
+  read: string;
+  /** Role identifier for users with approved write access */
+  write: string;
 }
 
 /**
  * Blockchain network configuration.
  */
 export const blockchainConfig: BlockchainNetworkConfig = {
-    /** Network endpoint. */
-    url: "http://127.0.0.1:8545",
-    /** StudentsRegister contract address. */
-    registerAddress: "0xDe09E74d4888Bc4e65F589e8c13Bce9F71DdF4c7",
-}
+  /** Network endpoint. */
+  url: "http://127.0.0.1:8545",
+  /** StudentsRegister contract address. */
+  registerAddress: "0x63f58053c9499E1104a6f6c6d2581d6D83067EEB",
+};
 
 /**
  * IPFS storage configuration.
  */
 export const ipfsConfig: IpfsStorageConfig = {
-    /** IPFS gateway url. */
-    gatewayUrl: "https://ipfs.io/ipfs/",
-}
+  /** IPFS gateway url. */
+  gatewayUrl: "https://ipfs.io/ipfs/",
+};
 
 /**
  * Ethereum JSON-RPC provider instance.
@@ -64,15 +64,15 @@ export const provider = new JsonRpcProvider(blockchainConfig.url);
  * Uses Ethereum's id() function to generate role identifiers from string constants.
  */
 export const roleCodes: RoleCodes = {
-    /** Role identifier for read access requesters */
-    readRequest: id("READER_APPLICANT"),
-    /** Role identifier for write access requesters */
-    writeRequest: id("WRITER_APPLICANT"),
-    /** Role identifier for approved readers */
-    read: id("READER_ROLE"),
-    /** Role identifier for approved writers */
-    write: id("WRITER_ROLE"),
-}
+  /** Role identifier for read access requesters */
+  readRequest: id("READER_APPLICANT"),
+  /** Role identifier for write access requesters */
+  writeRequest: id("WRITER_APPLICANT"),
+  /** Role identifier for approved readers */
+  read: id("READER_ROLE"),
+  /** Role identifier for approved writers */
+  write: id("WRITER_ROLE"),
+};
 
 /**
  * Debug mode flag. When true, logs errors to the console.
@@ -86,7 +86,7 @@ export const DEBUG = true;
  * @param error - The actual error object
  */
 export function logError(message: string, error: any): void {
-    if (DEBUG) {
-        console.error(message, error);
-    }
+  if (DEBUG) {
+    console.error(message, error);
+  }
 }
