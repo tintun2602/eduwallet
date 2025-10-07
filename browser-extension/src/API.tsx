@@ -29,9 +29,9 @@ export async function logIn(credentials: Credentials): Promise<StudentModel> {
         }
 
         // Get student's smart contract address
-        const contractAddress = await studentsRegister
-            .connect(studentWallet)
-            .getStudentWallet(studentWallet.address);
+    const contractAddress = await studentsRegister
+      .connect(studentWallet as any)
+      .getStudentWallet(studentWallet.address);
         
         if (!contractAddress) {
             throw new Error('Student contract address not found');
@@ -74,7 +74,7 @@ export async function getUniversities(student: StudentModel, universitiesAddress
 
         // Get wallet addresses for all universities
         const universitiesWallets = await studentsRegister
-            .connect(student.wallet)
+            .connect(student.wallet as any)
             .getUniversitiesWallets(universitiesAddresses);
             
         if (!universitiesWallets || universitiesWallets.length !== universitiesAddresses.length) {

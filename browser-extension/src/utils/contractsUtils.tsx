@@ -1,15 +1,14 @@
-import { Wallet, JsonRpcProvider } from 'ethers';
-import { derivePrivateKey, formatDate } from './utils';
-import { StudentsRegister__factory } from "../../../typechain-types/factories/contracts/StudentsRegister__factory"
-import { Student__factory } from "../../../typechain-types/factories/contracts/Student__factory"
-import { Credentials, StudentModel } from "../models/student"
-import type { StudentsRegister } from '../../../typechain-types/contracts/StudentsRegister';
-import UniversityModel from '../models/university';
-import { University__factory } from "../../../typechain-types/factories/contracts/University__factory"
-import { blockchainConfig, roleCodes, logError } from './conf';
-import type { Student } from '../../../typechain-types/contracts/Student';
-import type { ContractTransactionResponse } from 'ethers';
-import { Permission, PermissionType } from '../models/permissions';
+import { Wallet, JsonRpcProvider } from "ethers";
+import { derivePrivateKey, formatDate } from "./utils";
+import { StudentsRegister__factory } from "../../../typechain-types/factories/contracts/StudentsRegister__factory";
+import { Student__factory } from "../../../typechain-types/factories/contracts/Student__factory";
+import { Credentials, StudentModel } from "../models/student";
+import type { StudentsRegister } from "../../../typechain-types/contracts/StudentsRegister";
+import UniversityModel from "../models/university";
+import { University__factory } from "../../../typechain-types/factories/contracts/University__factory";
+import { blockchainConfig, roleCodes, logError } from "./conf";
+import type { Student } from "../../../typechain-types/contracts/Student";
+import { Permission, PermissionType } from "../models/permissions";
 
 // Initialize provider once for reuse
 const provider = new JsonRpcProvider(blockchainConfig.url);
@@ -21,12 +20,17 @@ const provider = new JsonRpcProvider(blockchainConfig.url);
  * @throws {Error} If contract connection fails
  */
 export function getStudentsRegister(): StudentsRegister {
-    try {
-        return StudentsRegister__factory.connect(blockchainConfig.registerAddress, provider);
-    } catch (error) {
-        logError('Failed to connect to StudentsRegister contract:', error);
-        throw new Error('Could not establish connection to StudentsRegister contract');
-    }
+  try {
+    return StudentsRegister__factory.connect(
+      blockchainConfig.registerAddress,
+      provider as any
+    );
+  } catch (error) {
+    logError("Failed to connect to StudentsRegister contract:", error);
+    throw new Error(
+      "Could not establish connection to StudentsRegister contract"
+    );
+  }
 }
 
 /**
@@ -37,15 +41,15 @@ export function getStudentsRegister(): StudentsRegister {
  * @throws {Error} If contract connection fails or address is invalid
  */
 export function getStudentContract(student: StudentModel): Student {
-    try {
-        if (!student.contractAddress) {
-            throw new Error('Student contract address is missing');
-        }
-        return Student__factory.connect(student.contractAddress, provider);
-    } catch (error) {
-        logError('Failed to connect to Student contract:', error);
-        throw new Error('Could not establish connection to Student contract');
+  try {
+    if (!student.contractAddress) {
+      throw new Error("Student contract address is missing");
     }
+    return Student__factory.connect(student.contractAddress, provider as any);
+  } catch (error) {
+    logError("Failed to connect to Student contract:", error);
+    throw new Error("Could not establish connection to Student contract");
+  }
 }
 
 /**
@@ -55,17 +59,22 @@ export function getStudentContract(student: StudentModel): Student {
  * @returns {Promise<Wallet>} Connected wallet instance
  * @throws {Error} If wallet creation fails or credentials are invalid
  */
-export async function getStudentWallet(credentials: Credentials): Promise<Wallet> {
-    try {
-        if (!credentials.password || !credentials.id) {
-            throw new Error('Invalid credentials: Missing password or ID');
-        }
-        const privateKey = await derivePrivateKey(credentials.password, credentials.id);
-        return new Wallet(privateKey, provider);
-    } catch (error) {
-        logError('Failed to create student wallet:', error);
-        throw new Error('Could not create student wallet from credentials');
+export async function getStudentWallet(
+  credentials: Credentials
+): Promise<Wallet> {
+  try {
+    if (!credentials.password || !credentials.id) {
+      throw new Error("Invalid credentials: Missing password or ID");
     }
+    const privateKey = await derivePrivateKey(
+      credentials.password,
+      credentials.id
+    );
+    return new Wallet(privateKey, provider);
+  } catch (error) {
+    logError("Failed to create student wallet:", error);
+    throw new Error("Could not create student wallet from credentials");
+  }
 }
 
 /**
@@ -75,33 +84,32 @@ export async function getStudentWallet(credentials: Credentials): Promise<Wallet
  * @throws {Error} If contract connection fails or data retrieval fails
  */
 export async function getStudent(student: StudentModel): Promise<void> {
-    try {
-        if (!student.wallet) {
-            throw new Error('Student wallet not initialized');
-        }
-
-        // Connect to student's contract
-        const contract = getStudentContract(student);
-
-        // Fetch student info
-        const {
-            basicInfo,
-            results
-        } = await contract.connect(student.wallet).getStudentInfo();
-
-        // Update student model
-        student.name = basicInfo.name;
-        student.surname = basicInfo.surname;
-        student.birthPlace = basicInfo.birthPlace;
-        student.birthDate = formatDate(basicInfo.birthDate);
-        student.country = basicInfo.country;
-
-        // Update academic results
-        student.updateResults(results);
-    } catch (error) {
-        logError('Failed to fetch student data:', error);
-        throw new Error('Could not retrieve student information');
+  try {
+    if (!student.wallet) {
+      throw new Error("Student wallet not initialized");
     }
+
+    // Connect to student's contract
+    const contract = getStudentContract(student);
+
+    // Fetch student info
+    const { basicInfo, results } = await contract
+      .connect(student.wallet as any)
+      .getStudentInfo();
+
+    // Update student model
+    student.name = basicInfo.name;
+    student.surname = basicInfo.surname;
+    student.birthPlace = basicInfo.birthPlace;
+    student.birthDate = formatDate(basicInfo.birthDate);
+    student.country = basicInfo.country;
+
+    // Update academic results
+    student.updateResults(results);
+  } catch (error) {
+    logError("Failed to fetch student data:", error);
+    throw new Error("Could not retrieve student information");
+  }
 }
 
 /**
@@ -112,38 +120,43 @@ export async function getStudent(student: StudentModel): Promise<void> {
  * @returns {Promise<UniversityModel>} A promise that resolves to the university model
  * @throws {Error} If university data cannot be retrieved or connection fails
  */
-export async function getUniversity(student: StudentModel, universityAddress: string, universityWallet: string): Promise<UniversityModel> {
-    try {
-        if (!student.wallet) {
-            throw new Error('Student wallet not initialized');
-        }
-
-        if (!universityAddress || !universityWallet) {
-            throw new Error('University address or wallet address is missing');
-        }
-
-        // Connect to university's smart contract using its wallet address
-        const contract = University__factory.connect(universityWallet, provider);
-
-        // Fetch university information using student's credentials
-        const {
-            name,
-            country,
-            shortName
-        } = await contract.connect(student.wallet).getUniversityInfo();
-
-        // Create and return new university model with fetched data
-        return new UniversityModel(
-            name,
-            country,
-            shortName,
-            universityAddress,
-            universityWallet
-        );
-    } catch (error) {
-        logError('Failed to fetch university data:', error);
-        throw new Error('Could not retrieve university information');
+export async function getUniversity(
+  student: StudentModel,
+  universityAddress: string,
+  universityWallet: string
+): Promise<UniversityModel> {
+  try {
+    if (!student.wallet) {
+      throw new Error("Student wallet not initialized");
     }
+
+    if (!universityAddress || !universityWallet) {
+      throw new Error("University address or wallet address is missing");
+    }
+
+    // Connect to university's smart contract using its wallet address
+    const contract = University__factory.connect(
+      universityWallet,
+      provider as any
+    );
+
+    // Fetch university information using student's credentials
+    const { name, country, shortName } = await contract
+      .connect(student.wallet as any)
+      .getUniversityInfo();
+
+    // Create and return new university model with fetched data
+    return new UniversityModel(
+      name,
+      country,
+      shortName,
+      universityAddress,
+      universityWallet
+    );
+  } catch (error) {
+    logError("Failed to fetch university data:", error);
+    throw new Error("Could not retrieve university information");
+  }
 }
 
 /**
@@ -153,62 +166,70 @@ export async function getUniversity(student: StudentModel, universityAddress: st
  * @returns {Promise<Permission[]>} Array of all permissions (both requests and granted)
  * @throws {Error} If permissions cannot be retrieved from the blockchain
  */
-export async function getRawPermissions(student: StudentModel): Promise<Permission[]> {
-    try {
-        if (!student.wallet) {
-            throw new Error('Student wallet not initialized');
-        }
-
-        if (!student.contractAddress) {
-            throw new Error('Student contract address is missing');
-        }
-
-        // Connect contract with student's wallet for auth
-        const studentContract = getStudentContract(student).connect(student.wallet);
-
-        // Get actual permissions in parallel using the retrieved types
-        const [
-            readRequests,
-            writeRequests,
-            reads,
-            writes
-        ] = await Promise.all([
-            studentContract.getPermissions(roleCodes.readRequest),
-            studentContract.getPermissions(roleCodes.writeRequest),
-            studentContract.getPermissions(roleCodes.read),
-            studentContract.getPermissions(roleCodes.write)
-        ]);
-
-        // Map string arrays to Permission objects arrays
-        const readRequestPermissions: Permission[] = readRequests.map(universityAddress => ({
-            university: universityAddress,
-            type: PermissionType.Read,
-            request: true
-        }));
-
-        const writeRequestPermissions: Permission[] = writeRequests.map(universityAddress => ({
-            university: universityAddress,
-            type: PermissionType.Write,
-            request: true
-        }));
-
-        const readPermissions: Permission[] = reads.map(universityAddress => ({
-            university: universityAddress,
-            type: PermissionType.Read,
-            request: false
-        }));
-
-        const writePermissions: Permission[] = writes.map(universityAddress => ({
-            university: universityAddress,
-            type: PermissionType.Write,
-            request: false
-        }));
-
-        return [...readRequestPermissions, ...writeRequestPermissions, ...readPermissions, ...writePermissions];
-    } catch (error) {
-        logError('Failed to fetch permissions:', error);
-        throw new Error('Could not retrieve permission information');
+export async function getRawPermissions(
+  student: StudentModel
+): Promise<Permission[]> {
+  try {
+    if (!student.wallet) {
+      throw new Error("Student wallet not initialized");
     }
+
+    if (!student.contractAddress) {
+      throw new Error("Student contract address is missing");
+    }
+
+    // Connect contract with student's wallet for auth
+    const studentContract = getStudentContract(student).connect(
+      student.wallet as any
+    );
+
+    // Get actual permissions in parallel using the retrieved types
+    const [readRequests, writeRequests, reads, writes] = await Promise.all([
+      studentContract.getPermissions(roleCodes.readRequest),
+      studentContract.getPermissions(roleCodes.writeRequest),
+      studentContract.getPermissions(roleCodes.read),
+      studentContract.getPermissions(roleCodes.write),
+    ]);
+
+    // Map string arrays to Permission objects arrays
+    const readRequestPermissions: Permission[] = readRequests.map(
+      (universityAddress) => ({
+        university: universityAddress,
+        type: PermissionType.Read,
+        request: true,
+      })
+    );
+
+    const writeRequestPermissions: Permission[] = writeRequests.map(
+      (universityAddress) => ({
+        university: universityAddress,
+        type: PermissionType.Write,
+        request: true,
+      })
+    );
+
+    const readPermissions: Permission[] = reads.map((universityAddress) => ({
+      university: universityAddress,
+      type: PermissionType.Read,
+      request: false,
+    }));
+
+    const writePermissions: Permission[] = writes.map((universityAddress) => ({
+      university: universityAddress,
+      type: PermissionType.Write,
+      request: false,
+    }));
+
+    return [
+      ...readRequestPermissions,
+      ...writeRequestPermissions,
+      ...readPermissions,
+      ...writePermissions,
+    ];
+  } catch (error) {
+    logError("Failed to fetch permissions:", error);
+    throw new Error("Could not retrieve permission information");
+  }
 }
 
 /**
@@ -219,22 +240,25 @@ export async function getRawPermissions(student: StudentModel): Promise<Permissi
  * @returns {Promise<ContractTransactionResponse>} Transaction response from the blockchain
  * @throws {Error} If transaction fails or student wallet is not initialized
  */
-export async function revokePermission(student: StudentModel, universityAddress: string): Promise<ContractTransactionResponse> {
-    try {
-        if (!student.wallet) {
-            throw new Error('Student wallet not initialized');
-        }
-
-        if (!universityAddress) {
-            throw new Error('University address is required');
-        }
-
-        const contract = getStudentContract(student).connect(student.wallet);
-        return await contract.revokePermission(universityAddress);
-    } catch (error) {
-        logError('Failed to revoke permission:', error);
-        throw new Error('Could not revoke university permission');
+export async function revokePermission(
+  student: StudentModel,
+  universityAddress: string
+): Promise<any> {
+  try {
+    if (!student.wallet) {
+      throw new Error("Student wallet not initialized");
     }
+
+    if (!universityAddress) {
+      throw new Error("University address is required");
+    }
+
+    const contract = getStudentContract(student).connect(student.wallet as any);
+    return await contract.revokePermission(universityAddress);
+  } catch (error) {
+    logError("Failed to revoke permission:", error);
+    throw new Error("Could not revoke university permission");
+  }
 }
 
 /**
@@ -245,34 +269,40 @@ export async function revokePermission(student: StudentModel, universityAddress:
  * @returns {Promise<ContractTransactionResponse>} Transaction response from the blockchain
  * @throws {Error} If transaction fails, permission type is invalid, or student wallet is not initialized
  */
-export async function grantPermission(student: StudentModel, permission: Permission): Promise<ContractTransactionResponse> {
-    try {
-        if (!student.wallet) {
-            throw new Error('Student wallet not initialized');
-        }
-
-        if (!permission || !permission.university) {
-            throw new Error('Valid permission with university address is required');
-        }
-
-        const contract = getStudentContract(student).connect(student.wallet);
-        let permissionType: string = "";
-
-        switch (permission.type) {
-            case PermissionType.Read:
-                permissionType = roleCodes.read;
-                break;
-            case PermissionType.Write:
-                permissionType = roleCodes.write;
-                break;
-            default:
-                // Handle invalid permission type
-                throw new Error("Invalid permission type specified");
-        }
-
-        return await contract.grantPermission(permissionType, permission.university);
-    } catch (error) {
-        logError('Failed to grant permission:', error);
-        throw new Error('Could not grant university permission');
+export async function grantPermission(
+  student: StudentModel,
+  permission: Permission
+): Promise<any> {
+  try {
+    if (!student.wallet) {
+      throw new Error("Student wallet not initialized");
     }
+
+    if (!permission || !permission.university) {
+      throw new Error("Valid permission with university address is required");
+    }
+
+    const contract = getStudentContract(student).connect(student.wallet as any);
+    let permissionType: string = "";
+
+    switch (permission.type) {
+      case PermissionType.Read:
+        permissionType = roleCodes.read;
+        break;
+      case PermissionType.Write:
+        permissionType = roleCodes.write;
+        break;
+      default:
+        // Handle invalid permission type
+        throw new Error("Invalid permission type specified");
+    }
+
+    return await contract.grantPermission(
+      permissionType,
+      permission.university
+    );
+  } catch (error) {
+    logError("Failed to grant permission:", error);
+    throw new Error("Could not grant university permission");
+  }
 }
