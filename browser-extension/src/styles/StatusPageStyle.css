@@ -1,0 +1,53 @@
+/* StatusPageStyle.css - Verification status page styling */
+/* @author tintun - Styling for credential verification cards */
+
+.verification-card {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b9d 50%, #c44569 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.verification-card h5 {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.verification-card p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 8px;
+}
+
+.verification-card span {
+  color: white;
+  font-weight: 500;
+}
+
+.verification-card small {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.verification-card .text-success {
+  color: #28a745 !important;
+}
+
+/* Dark theme adjustments */
+body.dark-theme .verification-card {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b9d 50%, #c44569 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .verification-card {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .verification-card h5 {
+    font-size: 1.1rem;
+  }
+}
