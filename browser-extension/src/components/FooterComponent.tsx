@@ -6,7 +6,7 @@ import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 /**
  * Footer component renders the footer navigation menu.
  * @author Diego Da Giau - Original implementation
- * @author tintun - Added Share, Status, Credential menu options
+ * @author tintun - Added Share, Status, Credential, Import menu options
  * @returns {JSX.Element} The rendered footer component.
  */
 
@@ -110,6 +110,28 @@ export default function Footer(): JSX.Element {
               </Row>
               <Row>
                 <Col>Credential</Col>
+              </Row>
+            </Container>
+          </Col>
+          {/* Import menu option */}
+          <Col>
+            <Container
+              className={
+                "text-center" +
+                " " +
+                (menuOption === "import"
+                  ? "selected-option"
+                  : "not-selected-option")
+              }
+              onClick={() => changeMenu("import")}
+            >
+              <Row>
+                <Col>
+                  <Image src="images/icons/import.svg" />
+                </Col>
+              </Row>
+              <Row>
+                <Col>Import</Col>
               </Row>
             </Container>
           </Col>

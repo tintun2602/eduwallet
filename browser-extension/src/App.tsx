@@ -17,6 +17,7 @@ import MessagesProvider from "./providers/MessagesProvider";
 import SharePage from "./pages/SharePageComponent";
 import StatusPage from "./pages/StatusPageComponent";
 import CredentialPage from "./pages/CredentialPageComponent";
+import ImportPage from "./pages/ImportPageComponent";
 
 /**
  * The main application component that sets up routing and authentication.
@@ -38,6 +39,7 @@ import CredentialPage from "./pages/CredentialPageComponent";
  * - `/share` for the share page
  * - `/status` for the status page
  * - `/credential` for the credential page
+ * - `/import` for the CSV import page
  */
 function App(): JSX.Element {
   return (
@@ -54,6 +56,7 @@ function App(): JSX.Element {
                   <Route path="/share" element={<SharePage />} />
                   <Route path="/status" element={<StatusPage />} />
                   <Route path="/credential" element={<CredentialPage />} />
+                  <Route path="/import" element={<ImportPage />} />
                   <Route path="/wallet/:code" element={<CoursePage />} />
                   <Route path="/permissions" element={<PermissionsPage />} />
                 </Route>

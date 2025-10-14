@@ -13,6 +13,7 @@ export default function Layout(): JSX.Element {
     "/share",
     "/status",
     "/credential",
+    "/import",
   ].includes(location.pathname);
 
   return (
