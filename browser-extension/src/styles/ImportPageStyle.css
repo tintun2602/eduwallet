@@ -1,0 +1,290 @@
+/* Import Page Styles */
+.csv-upload-area {
+  border: 2px dashed #8b5cf6;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  background-color: rgba(139, 92, 246, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.csv-upload-area:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+  border-color: #7c3aed;
+}
+
+.csv-upload-area.drag-over {
+  background-color: rgba(139, 92, 246, 0.2);
+  border-color: #6d28d9;
+  transform: scale(1.02);
+}
+
+.csv-upload-area.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.csv-upload-area.disabled:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: none;
+}
+
+.upload-icon {
+  font-size: 48px;
+  color: #8b5cf6;
+  margin-bottom: 16px;
+}
+
+.upload-text {
+  color: #ffffff;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.select-file-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.select-file-btn:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-2px);
+}
+
+.import-progress {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.progress-text {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.progress-percentage {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.time-remaining {
+  color: #ffffff;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.progress-bar {
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.progress-bar .progress-bar-fill {
+  background-color: #8b5cf6;
+  border-radius: 4px;
+}
+
+.progress-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pause-btn,
+.cancel-btn {
+  color: #8b5cf6;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.pause-btn:hover,
+.cancel-btn:hover {
+  color: #7c3aed;
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.cancel-button {
+  flex: 1;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #e5e7eb;
+}
+
+.import-button {
+  flex: 1;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.import-button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  transform: translateY(-2px);
+}
+
+.import-button:disabled {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgba(0, 0, 0, 0.5);
+  cursor: not-allowed;
+}
+
+/* Validation Results Styles */
+.validation-results {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.validation-summary {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.validation-summary p {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.validation-errors {
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.validation-errors h6 {
+  color: #fbbf24;
+  margin-bottom: 12px;
+}
+
+.error-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.error-item {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.error-item:last-child {
+  border-bottom: none;
+}
+
+.preview-data {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.preview-data h6 {
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.table-dark {
+  background-color: transparent;
+}
+
+.table-dark th {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.table-dark td {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Duplicate Warnings Styles */
+.duplicate-warnings {
+  background-color: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.duplicate-warnings h6 {
+  color: #fbbf24;
+  margin-bottom: 12px;
+}
+
+.warning-list {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.warning-item {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.warning-item:last-child {
+  border-bottom: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .csv-upload-area {
+    padding: 24px;
+  }
+
+  .upload-icon {
+    font-size: 36px;
+  }
+
+  .upload-text {
+    font-size: 14px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .validation-results {
+    padding: 16px;
+  }
+
+  .table-responsive {
+    font-size: 12px;
+  }
+}
