@@ -1,18 +1,44 @@
-import { NonceManager, type ContractTransactionResponse, type Wallet } from "ethers";
-import type { CourseInfo, Evaluation, Student, StudentCredentials, StudentData } from "./types";
+import {
+  NonceManager,
+  type ContractTransactionResponse,
+  type Wallet,
+} from "ethers";
+import type {
+  CourseInfo,
+  Evaluation,
+  Student,
+  StudentCredentials,
+  StudentData,
+} from "./types";
 import { PermissionType } from "./types";
-import { computeDate, createStudentWallet, generateStudent, getStudentContract, getStudentsRegister, publishCertificate } from "./utils";
-import { provider, roleCodes } from "./conf";
+import {
+  computeDate,
+  createStudentWallet,
+  generateStudent,
+  getStudentContract,
+  getStudentsRegister,
+  publishCertificate,
+} from "./utils";
+import { provider, roleCodes, blockchainConfig } from "./conf";
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc.js';
-import type { Student as StudentContract } from '@typechain/contracts/Student';
+import utc from "dayjs/plugin/utc.js";
+import type { Student as StudentContract } from "@typechain/contracts/Student";
 
 /**
  * Re-export types for SDK consumers
+ * @author Diego Da Giau
+ * @co-author Tin Tun Naing
  */
-export type { StudentCredentials, StudentData, CourseInfo, Evaluation, Student };
+export type {
+  StudentCredentials,
+  StudentData,
+  CourseInfo,
+  Evaluation,
+  Student,
+};
 export { PermissionType };
 export { getStudentsRegister };
+export { blockchainConfig };
 
 // Configure dayjs to use UTC for consistent date handling across timezones
 dayjs.extend(utc);
@@ -25,42 +51,46 @@ dayjs.extend(utc);
  * @param {StudentData} student - The student information to register
  * @returns {Promise<StudentCredentials>} The created student credentials and wallet information
  */
-export async function registerStudent(universityWallet: Wallet, student: StudentData): Promise<StudentCredentials> {
-    // Get contract instance
-    const studentsRegister = getStudentsRegister();
+export async function registerStudent(
+  universityWallet: Wallet,
+  student: StudentData
+): Promise<StudentCredentials> {
+  // Get contract instance
+  const studentsRegister = getStudentsRegister();
 
-    // Create a new Ethereum wallet for the student
-    const studentEthWallet = createStudentWallet();
+  // Create a new Ethereum wallet for the student
+  const studentEthWallet = await createStudentWallet();
 
-    // Connect university wallet to provider
-    const connectedUniversity = universityWallet.connect(provider);
+  // Connect university wallet to provider
+  const connectedUniversity = universityWallet.connect(provider);
 
-    // Format student data for the contract
-    const basinInfo: StudentContract.StudentBasicInfoStruct = {
-        name: student.name,
-        surname: student.surname,
-        birthDate: dayjs.utc(student.birthDate).unix(),
-        birthPlace: student.birthPlace,
-        country: student.country
-    }
+  // Format student data for the contract
+  const basinInfo: StudentContract.StudentBasicInfoStruct = {
+    name: student.name,
+    surname: student.surname,
+    birthDate: dayjs.utc(student.birthDate).unix(),
+    birthPlace: student.birthPlace,
+    country: student.country,
+  };
 
-    // Register student on the blockchain
-    const registerTx = await studentsRegister.connect(connectedUniversity).registerStudent(
-        studentEthWallet.ethWallet?.address,
-        basinInfo
-    );
-    await registerTx.wait();
+  // Register student on the blockchain
+  const registerTx = await studentsRegister
+    .connect(connectedUniversity)
+    .registerStudent(studentEthWallet.ethWallet?.address, basinInfo);
+  await registerTx.wait();
 
-    // Get the academic wallet address created for the student
-    const studentAcademicWalletAddress = await studentsRegister.connect(universityWallet).getStudentWallet(studentEthWallet.ethWallet.address);
+  // Get the academic wallet address created for the student
+  const studentAcademicWalletAddress = await studentsRegister
+    .connect(universityWallet)
+    .getStudentWallet(studentEthWallet.ethWallet.address);
 
-    // Return complete student credentials
-    return {
-        id: studentEthWallet.id,
-        password: studentEthWallet.password,
-        academicWalletAddress: studentAcademicWalletAddress,
-        ethWallet: studentEthWallet.ethWallet,
-    }
+  // Return complete student credentials
+  return {
+    id: studentEthWallet.id,
+    password: studentEthWallet.password,
+    academicWalletAddress: studentAcademicWalletAddress,
+    ethWallet: studentEthWallet.ethWallet,
+  };
 }
 
 /**
@@ -73,46 +103,59 @@ export async function registerStudent(universityWallet: Wallet, student: Student
  * @param {CourseInfo[]} courses - Array of courses to enroll the student in
  * @returns {Promise<{course: CourseInfo, error: Error}[]>} Array of failed enrollments with their errors. Returns an empty array if all enrollments succeeded.
  */
-export async function enrollStudent(universityWallet: Wallet, studentWalletAddress: string, courses: CourseInfo[]): Promise<{ course: CourseInfo, error: Error }[]> {
-    // Get student contract instance
-    const studentWallet = getStudentContract(studentWalletAddress);
+export async function enrollStudent(
+  universityWallet: Wallet,
+  studentWalletAddress: string,
+  courses: CourseInfo[]
+): Promise<{ course: CourseInfo; error: Error }[]> {
+  // Get student contract instance
+  const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Connect university wallet to provider
-    const connectedUniversity = new NonceManager(universityWallet.connect(provider));
+  // Connect university wallet to provider
+  const connectedUniversity = new NonceManager(
+    universityWallet.connect(provider)
+  );
 
-    // Array to track enrollment transactions with their corresponding course data
-    const enrollmentPromises: { tx: Promise<ContractTransactionResponse>, course: CourseInfo }[] = [];
+  // Array to track enrollment transactions with their corresponding course data
+  const enrollmentPromises: {
+    tx: Promise<ContractTransactionResponse>;
+    course: CourseInfo;
+  }[] = [];
 
-    // Array to collect failed transactions
-    const failed: { course: CourseInfo, error: Error }[] = [];
+  // Array to collect failed transactions
+  const failed: { course: CourseInfo; error: Error }[] = [];
 
-    // Submit all enrollment transactions in parallel
-    for (const course of courses) {
-        // Create transaction promise and track it with its course data
-        const tx = studentWallet.connect(connectedUniversity).enroll(
-            course.code,
-            course.name,
-            course.degreeCourse,
-            BigInt(course.ects * 100)
-        );
-        enrollmentPromises.push({ tx, course });
-    }
+  // Submit all enrollment transactions in parallel
+  for (const course of courses) {
+    // Create transaction promise and track it with its course data
+    const tx = studentWallet
+      .connect(connectedUniversity)
+      .enroll(
+        course.code,
+        course.name,
+        course.degreeCourse,
+        BigInt(course.ects * 100)
+      );
+    enrollmentPromises.push({ tx, course });
+  }
 
-    // Process all transactions in parallel - wait for submission and confirmation
-    const confirmationPromises = enrollmentPromises.map(t =>
-        t.tx.then(x =>
-            // Wait for blockchain confirmation
-            x.wait().catch(error =>
-                failed.push({ course: t.course, error }))
-        ).catch(error => {
-            failed.push({ course: t.course, error });
-        }))
+  // Process all transactions in parallel - wait for submission and confirmation
+  const confirmationPromises = enrollmentPromises.map((t) =>
+    t.tx
+      .then((x) =>
+        // Wait for blockchain confirmation
+        x.wait().catch((error) => failed.push({ course: t.course, error }))
+      )
+      .catch((error) => {
+        failed.push({ course: t.course, error });
+      })
+  );
 
-    // Wait for all transaction processes to complete
-    await Promise.allSettled(confirmationPromises);
+  // Wait for all transaction processes to complete
+  await Promise.allSettled(confirmationPromises);
 
-    // Return the list of failed enrollments (empty if all succeeded)
-    return failed;
+  // Return the list of failed enrollments (empty if all succeeded)
+  return failed;
 }
 
 /**
@@ -124,52 +167,69 @@ export async function enrollStudent(universityWallet: Wallet, studentWalletAddre
  * @param {string} studentWalletAddress - The student's academic wallet address
  * @param {Evaluation[]} evaluations - Array of academic evaluations to record
  * @returns {Promise<{evaluation: Evaluation, error: Error}[]>} Array of failed evaluations with their errors. Returns an empty array if all evaluations were successfully recorded.
- * 
+ *
  * TODO: manage certificate publishing. Now it is sequential, better parallel.
  */
-export async function evaluateStudent(universityWallet: Wallet, studentWalletAddress: string, evaluations: Evaluation[]): Promise<{ evaluation: Evaluation, error: Error }[]> {
-    // Get student contract instance
-    const studentWallet = getStudentContract(studentWalletAddress);
+export async function evaluateStudent(
+  universityWallet: Wallet,
+  studentWalletAddress: string,
+  evaluations: Evaluation[]
+): Promise<{ evaluation: Evaluation; error: Error }[]> {
+  // Get student contract instance
+  const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Connect university wallet to provider with NonceManager
-    // The NonceManager wrapper handles transaction nonce tracking automatically, allowing multiple concurrent transactions without nonce conflicts
-    const connectedUniversity = new NonceManager(universityWallet.connect(provider));
+  // Connect university wallet to provider with NonceManager
+  // The NonceManager wrapper handles transaction nonce tracking automatically, allowing multiple concurrent transactions without nonce conflicts
+  const connectedUniversity = new NonceManager(
+    universityWallet.connect(provider)
+  );
 
-    // Array to track evaluation transactions with their corresponding data
-    const evaluationPromises: { tx: Promise<ContractTransactionResponse>, evaluation: Evaluation }[] = [];
+  // Array to track evaluation transactions with their corresponding data
+  const evaluationPromises: {
+    tx: Promise<ContractTransactionResponse>;
+    evaluation: Evaluation;
+  }[] = [];
 
-    // Array to collect failed transactions
-    const failed: { evaluation: Evaluation, error: Error }[] = [];
+  // Array to collect failed transactions
+  const failed: { evaluation: Evaluation; error: Error }[] = [];
 
-    for (const evaluation of evaluations) {
-        // Publish certificate to IPFS if provided
-        const certificate = evaluation.certificate ? await publishCertificate(evaluation.certificate) : "";
+  for (const evaluation of evaluations) {
+    // Publish certificate to IPFS if provided
+    const certificate = evaluation.certificate
+      ? await publishCertificate(evaluation.certificate)
+      : "";
 
-        // Record evaluation on the blockchain
-        const tx = studentWallet.connect(connectedUniversity).evaluate(
-            evaluation.code,
-            evaluation.grade,
-            dayjs.utc(evaluation.evaluationDate).unix(),
-            certificate
-        );
-        evaluationPromises.push({ tx, evaluation });
-    }
+    // Record evaluation on the blockchain
+    const tx = studentWallet
+      .connect(connectedUniversity)
+      .evaluate(
+        evaluation.code,
+        evaluation.grade,
+        dayjs.utc(evaluation.evaluationDate).unix(),
+        certificate
+      );
+    evaluationPromises.push({ tx, evaluation });
+  }
 
-    // Process all transactions in parallel - wait for submission and confirmation
-    const confirmationPromises = evaluationPromises.map(t =>
-        t.tx.then(x =>
-            // Wait for blockchain confirmation
-            x.wait().catch(error =>
-                failed.push({ evaluation: t.evaluation, error }))
-        ).catch(error => {
-            failed.push({ evaluation: t.evaluation, error });
-        }))
+  // Process all transactions in parallel - wait for submission and confirmation
+  const confirmationPromises = evaluationPromises.map((t) =>
+    t.tx
+      .then((x) =>
+        // Wait for blockchain confirmation
+        x
+          .wait()
+          .catch((error) => failed.push({ evaluation: t.evaluation, error }))
+      )
+      .catch((error) => {
+        failed.push({ evaluation: t.evaluation, error });
+      })
+  );
 
-    // Wait for all transaction processes to complete
-    await Promise.allSettled(confirmationPromises);
+  // Wait for all transaction processes to complete
+  await Promise.allSettled(confirmationPromises);
 
-    // Return the list of failed enrollments (empty if all succeeded)
-    return failed;
+  // Return the list of failed enrollments (empty if all succeeded)
+  return failed;
 }
 
 /**
@@ -180,24 +240,29 @@ export async function evaluateStudent(universityWallet: Wallet, studentWalletAdd
  * @param {string} studentWalletAddress - The student's academic wallet address
  * @returns {Promise<Student>} The student's basic information
  */
-export async function getStudentInfo(universityWallet: Wallet, studentWalletAddress: string): Promise<Student> {
-    // Get student contract instance
-    const studentWallet = getStudentContract(studentWalletAddress);
+export async function getStudentInfo(
+  universityWallet: Wallet,
+  studentWalletAddress: string
+): Promise<Student> {
+  // Get student contract instance
+  const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Connect university wallet to provider
-    const connectedUniversity = universityWallet.connect(provider);
+  // Connect university wallet to provider
+  const connectedUniversity = universityWallet.connect(provider);
 
-    // Fetch student's basic information
-    const student = await studentWallet.connect(connectedUniversity).getStudentBasicInfo();
+  // Fetch student's basic information
+  const student = await studentWallet
+    .connect(connectedUniversity)
+    .getStudentBasicInfo();
 
-    // Format and return student data
-    return {
-        name: student.name,
-        surname: student.surname,
-        birthDate: computeDate(student.birthDate),
-        birthPlace: student.birthPlace,
-        country: student.country,
-    }
+  // Format and return student data
+  return {
+    name: student.name,
+    surname: student.surname,
+    birthDate: computeDate(student.birthDate),
+    birthPlace: student.birthPlace,
+    country: student.country,
+  };
 }
 
 /**
@@ -208,21 +273,24 @@ export async function getStudentInfo(universityWallet: Wallet, studentWalletAddr
  * @param {string} studentWalletAddress - The student's academic wallet address
  * @returns {Promise<Student>} The student's complete information with academic results
  */
-export async function getStudentWithResult(universityWallet: Wallet, studentWalletAddress: string): Promise<Student> {
-    // Get student contract instance
-    const studentWallet = getStudentContract(studentWalletAddress);
+export async function getStudentWithResult(
+  universityWallet: Wallet,
+  studentWalletAddress: string
+): Promise<Student> {
+  // Get student contract instance
+  const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Connect university wallet to provider
-    const connectedUniversity = universityWallet.connect(provider);
+  // Connect university wallet to provider
+  const connectedUniversity = universityWallet.connect(provider);
 
-    // Fetch student data and results in parallel for efficiency
-    const [student, results] = await Promise.all([
-        studentWallet.connect(connectedUniversity).getStudentBasicInfo(),
-        studentWallet.connect(connectedUniversity).getResults(),
-    ]);
+  // Fetch student data and results in parallel for efficiency
+  const [student, results] = await Promise.all([
+    studentWallet.connect(connectedUniversity).getStudentBasicInfo(),
+    studentWallet.connect(connectedUniversity).getResults(),
+  ]);
 
-    // Generate complete student object with processed results
-    return await generateStudent(connectedUniversity, student, results);
+  // Generate complete student object with processed results
+  return await generateStudent(connectedUniversity, student, results);
 }
 
 /**
@@ -234,20 +302,29 @@ export async function getStudentWithResult(universityWallet: Wallet, studentWall
  * @param {PermissionType} type - Type of permission requested (Read or Write)
  * @returns {Promise<void>} Promise that resolves when the permission request is submitted and confirmed
  */
-export async function askForPermission(universityWallet: Wallet, studentWalletAddress: string, type: PermissionType): Promise<void> {
-    // Get student contract instance
-    const studentWallet = getStudentContract(studentWalletAddress);
+export async function askForPermission(
+  universityWallet: Wallet,
+  studentWalletAddress: string,
+  type: PermissionType
+): Promise<void> {
+  // Get student contract instance
+  const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Connect university wallet to provider
-    const connectedUniversity = universityWallet.connect(provider);
+  // Connect university wallet to provider
+  const connectedUniversity = universityWallet.connect(provider);
 
-    // Determine the permission code based on requested type
-    const permission = type === PermissionType.Read ? roleCodes.readRequest : roleCodes.writeRequest;
+  // Determine the permission code based on requested type
+  const permission =
+    type === PermissionType.Read
+      ? roleCodes.readRequest
+      : roleCodes.writeRequest;
 
-    // Submit permission request transaction
-    const tx = await studentWallet.connect(connectedUniversity).askForPermission(permission);
-    // Wait for transaction confirmation
-    await tx.wait();
+  // Submit permission request transaction
+  const tx = await studentWallet
+    .connect(connectedUniversity)
+    .askForPermission(permission);
+  // Wait for transaction confirmation
+  await tx.wait();
 }
 
 /**
@@ -257,23 +334,28 @@ export async function askForPermission(universityWallet: Wallet, studentWalletAd
  * @param {string} studentWalletAddress - The student's academic wallet address
  * @returns {Promise<PermissionType | null>} The highest permission level (Read or Write) or null if no permission
  */
-export async function verifyPermission(universityWallet: Wallet, studentWalletAddress: string): Promise<PermissionType | null> {
-    // Get student contract instance
-    const studentWallet = getStudentContract(studentWalletAddress);
+export async function verifyPermission(
+  universityWallet: Wallet,
+  studentWalletAddress: string
+): Promise<PermissionType | null> {
+  // Get student contract instance
+  const studentWallet = getStudentContract(studentWalletAddress);
 
-    // Connect university wallet to provider
-    const connectedUniversity = universityWallet.connect(provider);
+  // Connect university wallet to provider
+  const connectedUniversity = universityWallet.connect(provider);
 
-    // Check permission level on blockchain
-    const permission = await studentWallet.connect(connectedUniversity).verifyPermission();
+  // Check permission level on blockchain
+  const permission = await studentWallet
+    .connect(connectedUniversity)
+    .verifyPermission();
 
-    // Check permission level on blockchain
-    if (permission === roleCodes.read) {
-        return PermissionType.Read;
-    } else if (permission === roleCodes.write) {
-        return PermissionType.Write;
-    }
+  // Check permission level on blockchain
+  if (permission === roleCodes.read) {
+    return PermissionType.Read;
+  } else if (permission === roleCodes.write) {
+    return PermissionType.Write;
+  }
 
-    // If no permission, return null
-    return null;
+  // If no permission, return null
+  return null;
 }

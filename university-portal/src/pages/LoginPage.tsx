@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./LoginPage.css";
+import "../styles/pages/LoginPage.css";
 
 const LoginPage: React.FC = () => {
   const [institutionId, setInstitutionId] = useState("");
@@ -38,8 +38,8 @@ const LoginPage: React.FC = () => {
         <div className="user-icon">
           <div className="icon-circle">
             <div className="user-figures">
-              <div className="figure-left">👤</div>
-              <div className="figure-right">👤</div>
+              <div className="figure-left">User</div>
+              <div className="figure-right">User</div>
               <div className="plus-icon">+</div>
             </div>
           </div>

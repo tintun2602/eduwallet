@@ -1,5 +1,8 @@
 # EduWallet University Portal
 
+<!-- @author Diego Da Giau -->
+<!-- @co-author Tin Tun Naing -->
+
 A web-based portal for universities to manage students in the EduWallet system.
 
 ## Features
@@ -57,7 +60,7 @@ university-portal/
 
 ## Current Status
 
-✅ **Implemented:**
+**Implemented:**
 
 - Login page with institution ID authentication
 - Student directory with search functionality
@@ -65,7 +68,7 @@ university-portal/
 - Responsive dark theme design
 - Basic routing structure
 
-🔄 **Next Steps:**
+**Next Steps:**
 
 - Integrate with EduWallet SDK
 - Connect to blockchain for real student data

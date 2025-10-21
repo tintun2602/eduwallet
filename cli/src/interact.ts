@@ -24,11 +24,12 @@ export let uni: Wallet | undefined;
  * Connects to the existing StudentsRegister contract.
  * This function connects to the deployed contract at the address specified in the SDK configuration.
  * @author Diego Da Giau
+ * @co-author Tin Tun Naing
  * @throws {Error} If connection fails
  */
 export async function connectToExistingContract(): Promise<void> {
   // Connect to the existing contract using the address from SDK configuration
-  const contractAddress = "0x63f58053c9499E1104a6f6c6d2581d6D83067EEB";
+  const contractAddress = eduwallet.blockchainConfig.registerAddress;
 
   // Create contract instance
   studentsRegister = StudentsRegister__factory.connect(

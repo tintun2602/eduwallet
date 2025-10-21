@@ -37,12 +37,14 @@ interface RoleCodes {
 
 /**
  * Blockchain network configuration.
+ * @author Diego Da Giau
+ * @co-author Tin Tun Naing
  */
 export const blockchainConfig: BlockchainNetworkConfig = {
   /** Network endpoint. */
   url: "http://127.0.0.1:8545",
   /** StudentsRegister contract address. */
-  registerAddress: "0x63f58053c9499E1104a6f6c6d2581d6D83067EEB",
+  registerAddress: "0x6D411e0A54382eD43F02410Ce1c7a7c122afA6E1",
 };
 
 /**

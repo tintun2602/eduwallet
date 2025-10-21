@@ -22,6 +22,7 @@ import { Wallet } from "ethers";
  * Validates an Ethereum private key format.
  * Ensures the input string is a properly formatted hexadecimal private key.
  * @author Diego Da Giau
+ * @co-author Tin Tun Naing
  * @param {string} input - The private key string to validate
  * @returns {string|boolean} Error message if validation fails, true if validation succeeds
  */
@@ -40,6 +41,7 @@ const validatePrivateKey = (input: string): string | boolean => {
  * Validates date format and ensures it represents a valid past date.
  * Performs multiple validation checks on date strings for user input.
  * @author Diego Da Giau
+ * @co-author Tin Tun Naing
  * @param {string} input - The date string to validate in YYYY-MM-DD format
  * @returns {string|boolean} Error message if validation fails, true if validation succeeds
  */
@@ -69,6 +71,7 @@ const validateDate = (input: string): string | boolean => {
  * Validates string input for appropriate length constraints.
  * Ensures strings meet minimum and maximum length requirements.
  * @author Diego Da Giau
+ * @co-author Tin Tun Naing
  * @param {string} input - The string to validate
  * @returns {string|boolean} Error message if validation fails, true if validation succeeds
  */
@@ -648,9 +651,9 @@ async function mainMenu(): Promise<void> {
 // Main execution starts here
 async function main() {
   console.log(figlet.textSync("EduWallet"));
-  console.log("🔗 Connecting to existing contract...");
+  console.log("Connecting to existing contract...");
   await connectToExistingContract();
-  console.log("✅ Connected to existing contract\n");
+  console.log("Connected to existing contract\n");
   await mainMenu();
 }
 
