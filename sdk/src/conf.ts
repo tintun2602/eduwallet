@@ -72,7 +72,7 @@ export const blockchainConfig: BlockchainNetworkConfig = {
   /** StudentsRegister contract address - configure via REGISTER_ADDRESS env var. */
   registerAddress:
     (typeof process !== "undefined" && process.env?.REGISTER_ADDRESS) ||
-    "0x6D411e0A54382eD43F02410Ce1c7a7c122afA6E1",
+    "0xB9816fC57977D5A786E654c7CF76767be63b966e",
 };
 
 /**
