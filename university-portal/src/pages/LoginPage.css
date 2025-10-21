@@ -1,0 +1,150 @@
+/* Login Page Styles - Matching Figma Design */
+.login-page {
+  min-height: 100vh;
+  background-color: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid #333;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.logo-edu {
+  color: white;
+}
+
+.logo-wallet {
+  color: #8b5cf6;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+}
+
+.logo-image {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.login-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.user-icon {
+  margin-bottom: 40px;
+}
+
+.icon-circle {
+  width: 120px;
+  height: 120px;
+  background-color: #8b5cf6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.user-figures {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.figure-left,
+.figure-right {
+  font-size: 32px;
+  color: white;
+}
+
+.plus-icon {
+  position: absolute;
+  top: -10px;
+  left: -5px;
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
+}
+
+.page-title {
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.account-form {
+  width: 100%;
+  max-width: 400px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 16px;
+  background-color: #2a2a2a;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  background-color: #333;
+  box-shadow: 0 0 0 2px #8b5cf6;
+}
+
+.form-input::placeholder {
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-header {
+    padding: 15px 20px;
+  }
+
+  .login-main {
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .icon-circle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .figure-left,
+  .figure-right {
+    font-size: 28px;
+  }
+}
