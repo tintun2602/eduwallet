@@ -22,8 +22,8 @@ export default function Footer(): JSX.Element {
   return (
     <>
       <footer className="container-fluid py-2">
-        <Row>
-          {/* Wallet menu option */}
+        {/* First row: Wallet, Share, Status */}
+        <Row className="mb-1">
           <Col>
             <Container
               className={
@@ -45,8 +45,6 @@ export default function Footer(): JSX.Element {
               </Row>
             </Container>
           </Col>
-
-          {/* Share menu option */}
           <Col>
             <Container
               className={
@@ -68,8 +66,6 @@ export default function Footer(): JSX.Element {
               </Row>
             </Container>
           </Col>
-
-          {/* Status menu option */}
           <Col>
             <Container
               className={
@@ -91,7 +87,10 @@ export default function Footer(): JSX.Element {
               </Row>
             </Container>
           </Col>
-          {/* Credential menu option */}
+        </Row>
+
+        {/* Second row: Credential, Import, Permissions */}
+        <Row>
           <Col>
             <Container
               className={
@@ -113,7 +112,6 @@ export default function Footer(): JSX.Element {
               </Row>
             </Container>
           </Col>
-          {/* Import menu option */}
           <Col>
             <Container
               className={
@@ -135,7 +133,6 @@ export default function Footer(): JSX.Element {
               </Row>
             </Container>
           </Col>
-          {/* Permissions menu option */}
           <Col>
             <Container
               className={

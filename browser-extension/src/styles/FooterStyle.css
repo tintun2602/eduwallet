@@ -1,21 +1,63 @@
 footer {
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-  }
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: var(--background-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
 
+/* Footer grid layout styling */
+footer .container-fluid {
+  padding: 8px 16px;
+}
+
+footer .row {
+  margin: 0;
+}
+
+footer .col {
+  padding: 2px;
+}
+
+/* Menu option styling */
 .selected-option {
-    font-weight: 700;
-    opacity: 1;
+  font-weight: 700;
+  opacity: 1;
+  color: var(--secondary-color);
+}
+
+.not-selected-option {
+  opacity: 0.7;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .not-selected-option img {
-    opacity: 0.6;
+  opacity: 0.6;
+}
+
+.selected-option img {
+  opacity: 1;
 }
 
 .selected-option:hover,
 .not-selected-option:hover {
-    cursor: pointer;
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* Icon and text sizing for compact layout */
+footer img {
+  width: 20px;
+  height: 20px;
+}
+
+footer .container {
+  padding: 4px 8px;
+}
+
+footer .row .col {
+  font-size: 10px;
+  line-height: 1.2;
 }

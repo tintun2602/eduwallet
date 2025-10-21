@@ -17,9 +17,9 @@ export default function Layout(): JSX.Element {
   ].includes(location.pathname);
 
   return (
-    <>
+    <div className={showFooter ? "page-with-footer" : ""}>
       <Outlet />
       {showFooter && <Footer />}
-    </>
+    </div>
   );
 }

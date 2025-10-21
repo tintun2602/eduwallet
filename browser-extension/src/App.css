@@ -1,5 +1,5 @@
 #root {
-  padding-top: 3vh;
+  padding-top: 2vh; /* Reduced from 3vh */
   height: 100%;
 }
 
@@ -14,27 +14,27 @@
 }
 
 .text-12 {
-  font-size: 12px;
+  font-size: 11px; /* Reduced */
 }
 
 .text-14 {
-  font-size: 14px;
+  font-size: 13px; /* Reduced */
 }
 
 .text-15 {
-  font-size: 15px;
+  font-size: 14px; /* Reduced */
 }
 
 .text-16 {
-  font-size: 16px;
+  font-size: 15px; /* Reduced */
 }
 
 .text-20 {
-  font-size: 20px;
+  font-size: 18px; /* Reduced */
 }
 
 .text-24 {
-  font-size: 24px;
+  font-size: 20px; /* Reduced */
 }
 
 .cursor-pointer {
@@ -61,4 +61,37 @@
 
 .main-content::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Footer spacing - prevent content overlap with fixed footer */
+/* Apply to pages that have footer navigation */
+.page-with-footer {
+  padding-bottom: 90px; /* Adjusted for 2-row footer */
+}
+
+/* Specific spacing for main content containers */
+.main-content-container {
+  padding-bottom: 90px; /* Adjusted for 2-row footer */
+  min-height: calc(100vh - 90px);
+  padding-top: 8px; /* Reduced top padding */
+}
+
+/* Compact spacing for browser extension */
+.container {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Reduce margins for more compact layout */
+.mb-4 {
+  margin-bottom: 1rem !important; /* Reduced from 1.5rem */
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem !important; /* Reduced from 1rem */
+}
+
+.my-3 {
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
 }
