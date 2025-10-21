@@ -10,13 +10,40 @@ import Header from "../components/HeaderComponent";
  * @author tintun - Implementation of credential management interface
  * @returns {JSX.Element} The rendered credential page component.
  */
+// Define credential types for different categories
+interface BaseCredential {
+  id: number;
+  type: string;
+  institution: string;
+  program: string;
+  issueDate: string;
+  status: string;
+}
+
+interface DegreeCredential extends BaseCredential {
+  gpa: string;
+}
+
+interface CertificateCredential extends BaseCredential {
+  grade?: string;
+  score?: string;
+}
+
+interface TranscriptCredential extends BaseCredential {
+  credits: string;
+}
+
 export default function CredentialPage(): JSX.Element {
   const [activeTab, setActiveTab] = useState<
     "degrees" | "certificates" | "transcripts"
   >("degrees");
 
   // Mock credential data
-  const credentials = {
+  const credentials: {
+    degrees: DegreeCredential[];
+    certificates: CertificateCredential[];
+    transcripts: TranscriptCredential[];
+  } = {
     degrees: [
       {
         id: 1,
@@ -79,7 +106,7 @@ export default function CredentialPage(): JSX.Element {
       {/* Header */}
       <Header title="Credential" />
 
-      <Container>
+      <Container className="main-content-container">
         {/* Page Description */}
         <Row className="mb-4">
           <Col>
@@ -142,22 +169,22 @@ export default function CredentialPage(): JSX.Element {
                     <small className="text-muted d-block">
                       Issued: {credential.issueDate}
                     </small>
-                    {credential.gpa && (
+                    {"gpa" in credential && credential.gpa && (
                       <small className="text-muted d-block">
                         GPA: {credential.gpa}
                       </small>
                     )}
-                    {credential.grade && (
+                    {"grade" in credential && credential.grade && (
                       <small className="text-muted d-block">
                         Grade: {credential.grade}
                       </small>
                     )}
-                    {credential.score && (
+                    {"score" in credential && credential.score && (
                       <small className="text-muted d-block">
                         Score: {credential.score}
                       </small>
                     )}
-                    {credential.credits && (
+                    {"credits" in credential && credential.credits && (
                       <small className="text-muted d-block">
                         Credits: {credential.credits}
                       </small>

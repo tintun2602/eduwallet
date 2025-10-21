@@ -1,18 +1,10 @@
 import "../styles/ImportPageStyle.css";
 import type { JSX } from "react";
 import { useState, useRef, useCallback, useEffect } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  ProgressBar,
-  Alert,
-} from "react-bootstrap";
+import { Container, Row, Col, Button, ProgressBar } from "react-bootstrap";
 import Header from "../components/HeaderComponent";
 import { useAuth } from "../providers/AuthenticationProvider";
 import { getStudentContract } from "../utils/contractsUtils";
-import { StudentModel } from "../models/student";
 
 /**
  * Represents a single row of CSV data for grade import.
@@ -121,9 +113,6 @@ export default function ImportPage(): JSX.Element {
   ); // Import metadata
 
   // Security State Management
-  const [authorizationError, setAuthorizationError] = useState<string | null>(
-    null
-  ); // Auth error message
   const [duplicateCheckResults, setDuplicateCheckResults] = useState<
     Map<string, boolean>
   >(new Map()); // Duplicate detection results
@@ -145,41 +134,6 @@ export default function ImportPage(): JSX.Element {
   // ============================================================================
   // PRODUCTION SECURITY FUNCTIONS
   // ============================================================================
-
-  /**
-   * Verifies that the current user has university permissions (WRITER_ROLE).
-   * This is a critical security check for production environments.
-   *
-   * @returns {Promise<void>} Sets authorizationError state if unauthorized
-   */
-  const checkUniversityAuthorization = async () => {
-    if (!student?.student) {
-      setAuthorizationError("No authenticated student found");
-      return;
-    }
-
-    try {
-      // Check if current user has WRITER_ROLE (university permissions)
-      const studentContract = getStudentContract(student.student);
-      const permission = await studentContract.verifyPermission();
-
-      if (
-        !permission ||
-        permission ===
-          "0x0000000000000000000000000000000000000000000000000000000000000000"
-      ) {
-        setAuthorizationError(
-          "Unauthorized: University permissions required for CSV import"
-        );
-        return;
-      }
-
-      setAuthorizationError(null);
-    } catch (error) {
-      console.error("Authorization check failed:", error);
-      setAuthorizationError("Failed to verify university permissions");
-    }
-  };
 
   /**
    * Checks for duplicate grades by querying the blockchain for existing results.
@@ -597,23 +551,11 @@ export default function ImportPage(): JSX.Element {
     <>
       <Header title="Import CSV" />
 
-      <Container>
-        {authorizationError && (
-          <Row className="mb-4">
-            <Col>
-              <Alert variant="danger">
-                <strong>Authorization Required:</strong> {authorizationError}
-              </Alert>
-            </Col>
-          </Row>
-        )}
-
+      <Container className="main-content-container">
         <Row className="mb-4">
           <Col>
             <div
-              className={`csv-upload-area ${isDragOver ? "drag-over" : ""} ${
-                authorizationError ? "disabled" : ""
-              }`}
+              className={`csv-upload-area ${isDragOver ? "drag-over" : ""}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}

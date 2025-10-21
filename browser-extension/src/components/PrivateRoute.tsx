@@ -1,5 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../providers/AuthenticationProvider";
+import { Outlet } from "react-router-dom";
 import type { JSX } from "react";
 
 /**
@@ -10,8 +9,6 @@ import type { JSX } from "react";
  * @returns {JSX.Element} The rendered private route component.
  */
 export default function PrivateRoute(): JSX.Element {
-  const student = useAuth();
-
   // TODO: Uncomment this when the authentication is implemented
 
   // Check if the student is authenticated
