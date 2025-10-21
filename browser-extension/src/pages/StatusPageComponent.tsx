@@ -16,7 +16,7 @@ export default function StatusPage(): JSX.Element {
       <Header title="Status" />
 
       {/* Credential verified card */}
-      <Container>
+      <Container className="main-content-container">
         <Row className="mb-3">
           <Col>
             <div className="verification-card">

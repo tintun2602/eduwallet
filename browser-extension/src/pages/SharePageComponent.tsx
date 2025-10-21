@@ -46,7 +46,7 @@ export default function SharePage(): JSX.Element {
       <Header title="Share" />
 
       {/* Instructions */}
-      <Container>
+      <Container className="main-content-container">
         <Row className="mb-4">
           <Col>
             <p className="text-light">

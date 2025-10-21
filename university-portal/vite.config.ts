@@ -9,5 +9,22 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    rollupOptions: {
+      external: ["http", "https", "zlib", "crypto"],
+    },
+  },
+  define: {
+    global: "globalThis",
+  },
+  resolve: {
+    alias: {
+      crypto: "crypto-browserify",
+      stream: "stream-browserify",
+      buffer: "buffer",
+      process: "process/browser",
+    },
+  },
+  optimizeDeps: {
+    include: ["buffer", "process"],
   },
 });

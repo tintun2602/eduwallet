@@ -57,7 +57,7 @@ The project aims to revolutionize university credit management by storing studen
 **Actors:**
 
 - **Employer**: Searches for a worker with specific skills and a verified academic background.
-- **Candidate**:  Applies for a job and needs to demonstrate her academic qualifications.
+- **Candidate**: Applies for a job and needs to demonstrate her academic qualifications.
 
 **Preconditions:**
 
@@ -75,6 +75,17 @@ The project aims to revolutionize university credit management by storing studen
 - The employer has verified and certified access to the candidate's academic records through EduWallet.
 - The candidate academic data are certified, secure and immutable without authorization.
 - The permission granted to the employer expires.
+
+## Scripts
+
+Utility scripts for managing the EduWallet blockchain system are located in the `scripts/` directory. These scripts handle:
+
+- **Contract Deployment**: Deploy smart contracts to local blockchain
+- **University Management**: Subscribe universities and manage permissions
+- **Student Registration**: Register students in bulk or individually
+- **System Utilities**: Fund wallets, check contract status, debug issues
+
+See [scripts/README.md](scripts/README.md) for detailed documentation and usage instructions.
 
 ## GUI prototype
 

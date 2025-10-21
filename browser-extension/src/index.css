@@ -5,8 +5,8 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  --primary-color: #FFFFFF;
-  --secondary-color: #6552FE;
+  --primary-color: #ffffff;
+  --secondary-color: #6552fe;
   --background-color: #070707;
 
   font-synthesis: none;
@@ -28,13 +28,14 @@ a:hover {
 body {
   width: 400px;
   height: 550px;
+  font-size: 14px; /* Reduced base font size */
 }
 
 button {
-  border-radius: 8px;
+  border-radius: 6px; /* Reduced border radius */
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  padding: 0.4em 0.8em; /* Reduced padding */
+  font-size: 0.9em; /* Reduced font size */
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
