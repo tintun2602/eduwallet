@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/academicrecord.tsx","./src/components/credentialdisplay.tsx","./src/components/universitybranding.tsx","./src/components/verificationstatus.tsx","./src/pages/credentialnotfound.tsx","./src/pages/downloadcredential.tsx","./src/pages/verifycredential.tsx","./src/services/blockchainservice.ts"],"version":"5.7.3"}
