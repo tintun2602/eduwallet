@@ -6,6 +6,7 @@ typechain-types
 filebase_demo
 .vscode
 notes.md
+.cursorrules
 
 # Chrome extension development
 tmp/
