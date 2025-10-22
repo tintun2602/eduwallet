@@ -46,7 +46,7 @@ async function testStudentRegistration() {
     console.log(`   Academic Wallet: ${credentials.academicWalletAddress}`);
     console.log(`   ETH Wallet: ${credentials.ethWallet.address}\n`);
   } catch (error) {
-    console.error("💥 Error registering test student:", error.message);
+    console.error("Error registering test student:", error.message);
     console.error("Full error:", error);
   }
 }

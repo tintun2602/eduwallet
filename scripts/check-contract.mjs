@@ -45,7 +45,7 @@ async function checkContractAddress() {
       console.log(`   Error calling supportsInterface: ${error.message}`);
     }
   } catch (error) {
-    console.error("💥 Error:", error.message);
+    console.error("Error:", error.message);
   }
 }
 

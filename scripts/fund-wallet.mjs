@@ -3,7 +3,7 @@
 import { Wallet, JsonRpcProvider } from "ethers";
 
 async function fundUniversityWallet() {
-  console.log("💰 Funding University Wallet");
+  console.log("Funding University Wallet");
   console.log("============================\n");
 
   // Connect to local blockchain
@@ -36,7 +36,7 @@ async function fundUniversityWallet() {
     );
 
     console.log(
-      `💰 Funder balance: ${funderBalance.toString()} wei (${
+      `Funder balance: ${funderBalance.toString()} wei (${
         Number(funderBalance) / 1e18
       } ETH)`
     );

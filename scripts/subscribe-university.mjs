@@ -37,7 +37,7 @@ async function subscribeUniversity() {
       );
 
     console.log(`Deploying Transaction hash: ${subscribeTx.hash}`);
-    console.log(`⏳ Waiting for confirmation...`);
+    console.log(`Waiting for confirmation...`);
 
     const receipt = await subscribeTx.wait();
     console.log(`Success University subscribed successfully!`);
