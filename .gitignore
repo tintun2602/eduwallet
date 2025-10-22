@@ -6,3 +6,7 @@ typechain-types
 filebase_demo
 .vscode
 notes.md
+
+# Chrome extension development
+tmp/
+browser-extension/dist/
