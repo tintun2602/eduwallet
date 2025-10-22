@@ -2,9 +2,11 @@ import "../styles/SharePageStyle.css";
 
 import type { JSX } from "react";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import Header from "../components/HeaderComponent";
+import { createShareableData, createVerificationUrl } from "../API";
+import { useAuth } from "../providers/AuthenticationProvider";
 
 /**
  * SharePage component displays credential sharing options.
@@ -13,13 +15,50 @@ import Header from "../components/HeaderComponent";
  */
 export default function SharePage(): JSX.Element {
   const qrCodeRef = useRef<HTMLCanvasElement>(null);
-  const shareUrl = "https://eduwallet.org/";
+  const { student } = useAuth();
 
+  // State for sharing
+  const [verificationUrl, setVerificationUrl] = useState<string>("");
+  const [accessDuration, setAccessDuration] = useState<string>("24h");
+  const [expirationTime, setExpirationTime] = useState<Date | null>(null);
+
+  // Calculate expiration time based on duration
+  const calculateExpirationTime = (duration: string): Date => {
+    const now = new Date();
+    switch (duration) {
+      case "1h":
+        return new Date(now.getTime() + 60 * 60 * 1000);
+      case "24h":
+        return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      case "7d":
+        return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      case "30d":
+        return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      default:
+        return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    }
+  };
+
+  // Generate verification URL when student data or duration changes
   useEffect(() => {
-    if (qrCodeRef.current) {
+    if (student) {
+      const expiresAt = calculateExpirationTime(accessDuration);
+      setExpirationTime(expiresAt);
+
+      const shareData = createShareableData(student, [], expiresAt);
+
+      // Generate verification URL
+      const { url } = createVerificationUrl(shareData);
+      setVerificationUrl(url);
+    }
+  }, [student, accessDuration]);
+
+  // Generate QR code when verification URL changes
+  useEffect(() => {
+    if (qrCodeRef.current && verificationUrl) {
       QRCode.toCanvas(
         qrCodeRef.current,
-        shareUrl,
+        verificationUrl,
         {
           width: 200,
           margin: 2,
@@ -33,57 +72,57 @@ export default function SharePage(): JSX.Element {
         }
       );
     }
-  }, [shareUrl]);
+  }, [verificationUrl]);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    // You could add a toast notification here
+    if (verificationUrl) {
+      navigator.clipboard.writeText(verificationUrl);
+    }
   };
 
   return (
     <>
-      {/* Header */}
       <Header title="Share" />
-
-      {/* Instructions */}
       <Container className="main-content-container">
         <Row className="mb-4">
           <Col>
             <p className="text-light">
-              Public link created - Copy the link to share, add to your LinkedIn
-              profile or send a json copy
+              Share your academic credentials with employers through a
+              downloadable PDF
             </p>
           </Col>
         </Row>
-
-        {/* Public Link */}
-        <Row className="mb-3">
-          <Col>
-            <div className="d-flex">
-              <Form.Control
-                type="text"
-                value={shareUrl}
-                readOnly
-                className="share-input me-2"
-              />
-              <Button className="copy-button" onClick={handleCopyLink}>
-                copy
-              </Button>
-            </div>
+        <Row className="mb-4">
+          <Col md={6}>
+            <Form.Label className="text-light">Access Duration</Form.Label>
+            <Form.Select
+              value={accessDuration}
+              onChange={(e) => setAccessDuration(e.target.value)}
+              className="share-input"
+            >
+              <option value="1h">1 Hour</option>
+              <option value="24h">24 Hours</option>
+              <option value="7d">7 Days</option>
+              <option value="30d">30 Days</option>
+            </Form.Select>
+          </Col>
+          <Col md={6}>
+            {expirationTime && (
+              <div className="text-light mt-4">
+                <small>
+                  <strong>Expires:</strong> {expirationTime.toLocaleString()}
+                </small>
+              </div>
+            )}
           </Col>
         </Row>
-
-        {/* Add to LinkedIn Profile */}
         <Row className="mb-3">
           <Col>
-            <Button className="share-option-button w-100 d-flex justify-content-between align-items-center">
-              <span>Add to LinkedIn Profile</span>
-              <div className="linkedin-icon">in</div>
+            <Button className="copy-button" onClick={handleCopyLink}>
+              Copy Download Link
             </Button>
           </Col>
         </Row>
-
-        {/* Send Credential */}
         <Row className="mb-4">
           <Col>
             <Button className="share-option-button w-100 d-flex justify-content-between align-items-center">
@@ -92,13 +131,10 @@ export default function SharePage(): JSX.Element {
             </Button>
           </Col>
         </Row>
-
-        {/* QR Code Section */}
         <Row>
           <Col>
             <p className="text-light mb-3">
-              You may also share the public link by having another person scan
-              this QR code
+              Share your download link by having employers scan this QR code
             </p>
             <div className="qr-code-container">
               <div className="qr-code-placeholder">
